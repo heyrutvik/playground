@@ -76,6 +76,19 @@ enter
 puts Number.new(1).to_ruby
 enter
 
-puts "denotation semantics number"
+puts "denotational semantics number"
 puts eval(Number.new(3).to_ruby).call({})
+enter
+
+puts "denotational semantics assign"
+puts eval(Assign.new(:y, Add.new(Variable.new(:x), Number.new(1))).to_ruby).call({ x: 3})
+enter
+
+puts ""
+s1 = While.new(
+  LessThan.new(Variable.new(:x), Number.new(5)),
+  Assign.new(:x, Mul.new(Variable.new(:x), Number.new(3)))
+)
+puts s1.to_ruby
+puts eval(s1.to_ruby).call({ x: 1 })
 enter

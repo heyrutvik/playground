@@ -159,6 +159,9 @@ class DoNothing
   def evaluate(environment)
     environment
   end
+  def to_ruby
+    "-> e { e }"
+  end
 end
 
 # assignment statement
@@ -181,6 +184,9 @@ class Assign < Struct.new(:name, :expression)
   end
   def evaluate(environment)
     environment.merge({name => expression.evaluate(environment)})
+  end
+  def to_ruby
+    "-> e { e.merge({ #{name.inspect} => (#{expression.to_ruby}).call(e)}) }"
   end
 end
 
@@ -215,6 +221,12 @@ class If < Struct.new(:condition, :consequence, :alternative)
       alternative.evaluate(environment)
     end
   end
+  def to_ruby
+    "-> e { if (#{condition.to_ruby}).call(e)" +
+    " then (#{consequence.to_ruby}).call(e)" +
+    " else (#{alternative.to_ruby}).call(e)" +
+    " end }"
+  end
 end
 
 # create sequence of statements
@@ -240,6 +252,9 @@ class Sequence < Struct.new(:first, :second)
   def evaluate(environment)
     second.evaluate(first.evaluate(environment))
   end
+  def to_ruby
+    "-> e { (#{second.to_ruby}).call((#{first.to_ruby}).call(e)) }"
+  end
 end
 
 # while loop using if and sequence
@@ -263,6 +278,12 @@ class While < Struct.new(:condition, :body)
     when Boolean.new(false)
       environment
     end
+  end
+  def to_ruby
+    "-> e {" +
+    " while (#{condition.to_ruby}).call(e); e = (#{body.to_ruby}).call(e); end;" +
+    " e" +
+    " }"
   end
 end
 
