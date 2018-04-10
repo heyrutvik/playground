@@ -2,9 +2,9 @@ package deterministic
 
 import utils._
 
-case class DFARule(state: State, char: Char, nextState: State) {
+case class DFARule(state: S, char: Char, nextState: S) {
 
-  def isApply(state: State, char: Char) = {
+  def isApply(state: S, char: Char) = {
     this.state == state && this.char == char
   }
 

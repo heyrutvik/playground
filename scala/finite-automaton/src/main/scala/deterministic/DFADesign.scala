@@ -1,14 +1,16 @@
 package deterministic
 
 import utils._
+import cats.data._
 
-case class DFADesign(startState: State, acceptState: Set[State], ruleBook: DFARuleBook) {
+case class DFADesign(startState: S, acceptState: Set[S], ruleBook: DFARuleBook) {
 
   def toDFA = DFA(startState, acceptState, ruleBook)
 
-  def isAccept(s: String) = {
-    val dfa = toDFA
-    dfa.readString(s)
-    dfa.isInAccept
-  }
+  private def isInAcceptState(s: String) = for {
+    _ <- DFA.readString(s)
+    dfa <- State.get
+  } yield (dfa.isInAccept)
+
+  def isAccept(s: String) = isInAcceptState(s).runA(toDFA).value
 }
