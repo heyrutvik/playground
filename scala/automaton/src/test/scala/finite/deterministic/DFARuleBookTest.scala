@@ -1,6 +1,6 @@
-package deterministic
+package finite.deterministic
 
-import common.FARule
+import finite.FARule
 import utils._
 
 class DFARuleBookTest extends UnitTest("DFA Rule Book") {

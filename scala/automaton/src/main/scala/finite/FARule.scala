@@ -1,4 +1,4 @@
-package common
+package finite
 
 import utils._
 

@@ -1,4 +1,4 @@
-package nondeterministic
+package finite.nondeterministic
 
 import cats.data.State
 import utils._

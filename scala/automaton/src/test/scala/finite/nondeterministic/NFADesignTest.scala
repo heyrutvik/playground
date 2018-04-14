@@ -1,7 +1,7 @@
-package nondeterministic
+package finite.nondeterministic
 
-import common.FARule
-import deterministic.UnitTest
+import finite.FARule
+import finite.deterministic.UnitTest
 import utils._
 
 class NFADesignTest extends UnitTest("NFA Rule Book") {

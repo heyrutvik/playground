@@ -1,4 +1,4 @@
-package deterministic
+package finite.deterministic
 
 import utils._
 import cats.data._

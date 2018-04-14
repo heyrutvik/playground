@@ -1,6 +1,6 @@
-package nondeterministic
+package finite.nondeterministic
 
-import common.FARule
+import finite.FARule
 import utils._
 
 case class NFARuleBook(rules: Seq[FARule]) {
