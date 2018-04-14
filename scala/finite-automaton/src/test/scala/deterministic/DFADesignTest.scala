@@ -15,6 +15,7 @@ class DFADesignTest extends UnitTest("DFA Rule Book") {
     val design = DFADesign(S(1), Set(S(3)), rulebook)
     design.isAccept("a") should be (false)
     design.isAccept("baa") should be (false)
+    design.isAccept("bab") should be (true)
     design.isAccept("baba") should be (true)
   }
 }

@@ -14,5 +14,7 @@ object DFA {
     DFA(dfa.ruleBook.nextState(dfa.currentState, char), dfa.acceptStates, dfa.ruleBook)
   }
 
-  def readString(s: String): State[DFA, Unit] = ???
+  def readString(s: String): State[DFA, Unit] = {
+    s.map(c => readChar(c)).map(f => State.modify(f)).reduce((s1, s2) => s1.flatMap(_ => s2))
+  }
 }
