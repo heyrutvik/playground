@@ -10,4 +10,12 @@ case class NFARuleBook(rules: Seq[FARule]) {
   }
 
   def ruleFor(state: S, char: Char): Seq[FARule] = rules.filter(r => r.isApply(state, char))
+
+  def followFreeMoves(states: Set[S]): Set[S] = {
+    val moreStates = nextStates(states, ' ')
+    if (moreStates.subsetOf(states))
+      states
+    else
+      followFreeMoves(states ++ moreStates)
+  }
 }

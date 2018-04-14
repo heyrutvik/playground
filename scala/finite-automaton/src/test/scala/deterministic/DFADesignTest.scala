@@ -5,7 +5,7 @@ import utils._
 
 class DFADesignTest extends UnitTest("DFA Rule Book") {
 
-  "simulate fa using string" should "be in accept state" in {
+  "simulate d fa using string" should "be in accept state" in {
 
     val rulebook = DFARuleBook(Seq(
       FARule(S(1), 'a', S(2)), FARule(S(1), 'b', S(1)),

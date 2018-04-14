@@ -3,9 +3,9 @@ package nondeterministic
 import cats.data.State
 import utils._
 
-case class NFA(var currentStates: Set[S], acceptStates: Set[S], ruleBook: NFARuleBook) {
-
-  def isInAccept: Boolean = currentStates.intersect(acceptStates).size > 0
+case class NFA(var cs: Set[S], acceptStates: Set[S], ruleBook: NFARuleBook) {
+  val currentStates = ruleBook.followFreeMoves(cs)
+  def isInAccept: Boolean = currentStates.intersect(acceptStates).nonEmpty
 }
 
 object NFA {
