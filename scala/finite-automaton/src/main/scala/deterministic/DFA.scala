@@ -5,7 +5,7 @@ import cats.data.{State, _}
 
 case class DFA(var currentState: S, acceptStates: Set[S], ruleBook: DFARuleBook) {
 
-  def isInAccept = acceptStates.contains(currentState)
+  def isInAccept: Boolean = acceptStates.contains(currentState)
 }
 
 object DFA {

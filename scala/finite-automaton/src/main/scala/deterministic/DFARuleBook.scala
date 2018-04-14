@@ -1,10 +1,11 @@
 package deterministic
 
+import common.FARule
 import utils._
 
-case class DFARuleBook(rules: Seq[DFARule]) {
+case class DFARuleBook(rules: Seq[FARule]) {
 
-  def nextState(state: S, char: Char) = ruleFor(state, char).map(_.follow).getOrElse(throw new Exception("dfa rule not found!"))
+  def nextState(state: S, char: Char): S = ruleFor(state, char).map(_.follow).getOrElse(throw new Exception("dfa rule not found!"))
 
-  def ruleFor(state: S, char: Char): Option[DFARule] = rules.filter(r => r.isApply(state, char)).headOption
+  def ruleFor(state: S, char: Char): Option[FARule] = rules.filter(r => r.isApply(state, char)).headOption
 }

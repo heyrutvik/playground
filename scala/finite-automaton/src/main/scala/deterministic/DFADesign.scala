@@ -5,12 +5,13 @@ import cats.data._
 
 case class DFADesign(startState: S, acceptState: Set[S], ruleBook: DFARuleBook) {
 
-  def toDFA = DFA(startState, acceptState, ruleBook)
+  val toDFA = DFA(startState, acceptState, ruleBook)
 
-  private def isInAcceptState(s: String) = for {
-    _ <- DFA.readString(s)
-    dfa <- State.get
-  } yield (dfa.isInAccept)
-
-  def isAccept(s: String) = isInAcceptState(s).runA(toDFA).value
+  def isAccept(s: String) = {
+    val simulate = for {
+      _ <- DFA.readString(s)
+      dfa <- State.get
+    } yield (dfa.isInAccept)
+    simulate.runA(toDFA).value
+  }
 }
