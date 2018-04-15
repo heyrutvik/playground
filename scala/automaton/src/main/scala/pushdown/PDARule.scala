@@ -9,4 +9,12 @@ case class PDARule(state: S, char: Char, nextState: S, popChar: Char, pushChars:
     this.popChar == config.stack.top &&
     this.char == char
   }
+
+  def follow(config: PDAConfig) = {
+    PDAConfig(nextState, nextStack(config))
+  }
+
+  def nextStack(config: PDAConfig) = {
+    config.stack.pop.push(pushChars)
+  }
 }

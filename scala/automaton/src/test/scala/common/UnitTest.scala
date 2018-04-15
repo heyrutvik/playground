@@ -1,4 +1,4 @@
-package finite.deterministic
+package common
 
 import org.scalatest._
 

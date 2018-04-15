@@ -1,5 +1,6 @@
 package finite.deterministic
 
+import common.UnitTest
 import finite.FARule
 import utils._
 
