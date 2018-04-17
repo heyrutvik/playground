@@ -6,7 +6,7 @@ import utils._
 
 class DPDARulebookTest extends UnitTest("DPDA Rule Book") {
 
-  "check next state" should "be as in rulebook" in {
+  "dpda rulebook" should "state check" in {
 
     val rulebook = DPDARuleBook(Seq(
       PDARule(S(1), '(', S(2), '$', List('b', '$')),

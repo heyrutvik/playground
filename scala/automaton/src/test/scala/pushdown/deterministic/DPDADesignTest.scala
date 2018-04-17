@@ -4,7 +4,7 @@ import common.UnitTest
 import pushdown._
 import utils._
 
-class DPDADesignTest extends UnitTest("DFA Rule Book") {
+class DPDADesignTest extends UnitTest("DPDA Design") {
 
   "simulate dpda using string" should "be in accept state" in {
 
