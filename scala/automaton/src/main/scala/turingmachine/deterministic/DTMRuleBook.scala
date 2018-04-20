@@ -8,5 +8,5 @@ case class DTMRuleBook(rules: Seq[TMRule]) {
 
   def ruleFor(config: TMConfiguration) = rules.filter(rule => rule.isApply(config)).headOption
 
-  def isApply(config: TMConfiguration) = ruleFor(config).isEmpty
+  def isApply(config: TMConfiguration) = ruleFor(config).nonEmpty
 }

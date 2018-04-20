@@ -34,6 +34,8 @@ class DTMTest extends UnitTest("DTM Test") {
 
     val tape = Tape(Vector(), 'a', Vector('a', 'a', 'b', 'b', 'b', 'c', 'c', 'c'), '_')
     val dtm = DTM(TMConfiguration(S(1), tape), Set(S(6)), ruleBook)
-    DTM.run(dtm).currentConfig.state should be (S(6))
+    val simulate = DTM.run(dtm)
+    simulate.isStuck should be (true)
+    simulate.currentConfig.state should be (S(6))
   }
 }
