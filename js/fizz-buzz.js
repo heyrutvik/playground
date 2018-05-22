@@ -199,3 +199,27 @@ let POWER = function(cn1) {
 /*
 console.log(toInt(POWER(TWO)(TWO)))
 */
+
+// less than or equals to
+let LESS_THAN_EQUALS_TO = function(cn1) {
+  return function(cn2) {
+    return IS_ZERO(SUBTRACT(cn1)(cn2))
+  }
+}
+/*
+console.log(toBoolean(LESS_THAN_EQUALS_TO(TWO)(ONE)))
+console.log(toBoolean(LESS_THAN_EQUALS_TO(ONE)(TWO)))
+*/
+
+// modulo
+let MOD = function(cn1) {
+  return function(cn2) {
+    IF(LESS_THAN_EQUALS_TO(cn2)(cn2))(
+      MOD(SUBTRACT(cn1)(cn2))(cn2)
+    )(
+      cn1
+    )
+  }
+}
+
+console.log(toInt(MOD(ADD(HUNDRED)(ONE))(TWO)))
