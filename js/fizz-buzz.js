@@ -40,6 +40,11 @@ let TWO = function(f) {
     return f(f(x))
   }
 }
+let THREE = function(f) {
+  return function(x) {
+    return f(f(f(x)))
+  }
+}
 let HUNDRED = function(f) {
   return function(x) {
     return f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(x))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
@@ -214,12 +219,13 @@ console.log(toBoolean(LESS_THAN_EQUALS_TO(ONE)(TWO)))
 // modulo
 let MOD = function(cn1) {
   return function(cn2) {
-    IF(LESS_THAN_EQUALS_TO(cn2)(cn2))(
-      MOD(SUBTRACT(cn1)(cn2))(cn2)
+    return IF(LESS_THAN_EQUALS_TO(cn2)(cn1))(
+      function(x) { return MOD(SUBTRACT(cn1)(cn2))(cn2)(x) }
     )(
       cn1
     )
   }
 }
 
-console.log(toInt(MOD(ADD(HUNDRED)(ONE))(TWO)))
+console.log(toInt(MOD(THREE)(TWO)))
+
