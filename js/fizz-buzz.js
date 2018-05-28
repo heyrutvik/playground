@@ -1,4 +1,13 @@
-// write fizz-buzz program using most fundamental thing.. functions!
+/**
+ * helper function to print output
+ */
+let print = function(msg, output) { 
+	console.log(msg + ": " + output)
+}
+
+/**
+ * fizz buzz program using javascript features
+ */
 
 const range = (start, end) => (
   Array.from(Array(end - start + 1).keys()).map(i => i + start)
@@ -15,56 +24,69 @@ let fizzBuzzJS = range(1, 100).map(n => {
     return n
   }
 })
-//console.log(fizzBuzzStringJS)
+
+print("javascript fizz buzz output", fizzBuzzJS)
 
 /**
-properties of a function:
-1) plumbing - a function application is just about replacing parameters of the block with the arguments. (of course, if you just ignore the part of execution)
-2) currying - a function with any number of parameters can be rewritten as as a function of single parameter.
-3) equality - functions are interchangeable if they produce identical results when called with the same arguments. (regardless of their implementation)
-*/
+ * let us try to write fizz buzz program using functions only... we are going to
+ * encode everything using functions.. numbers, boolean and other operations!
+ *
+ * properties of a function:
+ * (1) plumbing - a function application is just about replacing parameters of 
+ * 		 the block with the arguments. (of course, if you just ignore the part of 
+ * 		 execution)
+ * (2) currying - a function with any number of parameters can be rewritten as 
+ * 		 as a function of single parameter.
+ * (3) equality - functions are interchangeable if they produce identical 
+ * 		 results when called with the same arguments. (regardless of their 
+ * 		 implementation)
+ */
 
-// number representation as function - aka Church Numerals
+/**
+ * number encoded as function - aka Church Numerals
+ */
+
 let ZERO = function(f) {
   return function(x) {
     return x
   }
 }
+
 let ONE = function(f) {
   return function(x) {
     return f(x)
   }
 }
+
 let TWO = function(f) {
   return function(x) {
     return f(f(x))
   }
 }
+
 let THREE = function(f) {
   return function(x) {
     return f(f(f(x)))
   }
 }
-let HUNDRED = function(f) {
-  return function(x) {
-    return f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(x))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
-  }
-}
 
-// method to convert church numerals(cn) to js number
+/**
+ * helper function to convert church numerals to javascript numbers
+ */
+
 let toInt = function(cn) {
   return cn(function(n) {
     return n + 1
   })(0);
 }
-/*
-console.log("church numeral zero as js number: " +toInt(ZERO))
-console.log("church numeral one as js number: " +toInt(ONE))
-console.log("church numeral two as js number: " +toInt(TWO))
-console.log("church numeral hundred as js number: " +toInt(HUNDRED))
-*/
 
-// church boolean
+print("ONE", toInt(ONE))
+print("TWO", toInt(TWO))
+
+/**
+ * boolean encoded as function
+ */
+
 let TRUE = function(x) {
   return function(y) {
     return x
@@ -77,16 +99,22 @@ let FALSE = function(x) {
   }
 }
 
-// method to convert church boolean(cb) to js boolean
+/**
+ * helper function to convert church boolean to javascript boolean
+ */
+
 let toBoolean = function(cb) {
   return cb(true)(false)
 }
-/*
-console.log(toBoolean(TRUE))
-console.log(toBoolean(FALSE))
-*/
 
-// church if condition
+print("TRUE", toBoolean(TRUE))
+print("FALSE", toBoolean(FALSE))
+
+/**
+ * if condition encoded as function
+ * it's just a syntactic sugar for calling chruch boolean
+ */
+
 let IF = function(cb) {
   return function(c) {
     return function(a) {
@@ -94,22 +122,25 @@ let IF = function(cb) {
     }
   }
 }
-/*
-console.log(IF(TRUE)("happy")("sad"))
-console.log(IF(FALSE)("happy")("sad"))
-*/
 
-// === 0 predicate
+print("IF TRUE", IF(TRUE)("happy")("sad"))
+print("IF FALSE", IF(FALSE)("happy")("sad"))
+
+/**
+ * predicate to check if given number is zero or not
+ */
+
 let IS_ZERO = function(cn) {
   return cn(function(x) { return FALSE })(TRUE)
 }
-/*
-console.log(toBoolean(IS_ZERO(ONE)))
-console.log(toBoolean(IS_ZERO(ZERO)))
-*/
 
+print("IS_ZERO ONE", toBoolean(IS_ZERO(ONE)))
+print("IS_ZERO ZERO", toBoolean(IS_ZERO(ZERO)))
 
-// pair data structure
+/**
+ * PAIR data structure constructor
+ */
+
 let PAIR = function(x) {
   return function(y) {
     return function(f) {
@@ -117,6 +148,13 @@ let PAIR = function(x) {
     }
   }
 }
+
+print("PAIR constructor", PAIR(1)(2))
+
+/**
+ * PAIR data structure selector
+ */
+
 let LEFT = function(p) {
   return p(function(x) {
     return function(y) {
@@ -124,6 +162,7 @@ let LEFT = function(p) {
     }
   })
 }
+
 let RIGHT = function(p) {
   return p(function(x) {
     return function(y) {
@@ -131,13 +170,14 @@ let RIGHT = function(p) {
     }
   })
 }
-/*
-let pair1 = PAIR(1)(2)
-console.log(LEFT(pair1))
-console.log(RIGHT(pair1))
-*/
 
-// increment operation on church numeral
+print("PAIR LEFT selector", LEFT(PAIR(1)(2)))
+print("PAIR RIGHT selector", RIGHT(PAIR(1)(2)))
+
+/**
+ * increment operation on chucrch numeral
+ */
+
 let INCREMENT = function(cn) {
   return function(f) {
     return function(x) {
@@ -145,83 +185,105 @@ let INCREMENT = function(cn) {
     }
   }
 }
-/*
-console.log(toInt(INCREMENT(HUNDRED)))
-*/
 
-/* decrement using pair
+print("INCREMENT THREE", toInt(INCREMENT(THREE)))
+
+/**
+ * decrement operation using pair
  * (zero, zero) as input
  * slide as function
  * after appling n times, take left
  */
+
 let SLIDE = function(p) {
   return PAIR(RIGHT(p))(INCREMENT(RIGHT(p)))
 }
+
 let DECREMENT = function(cn) {
   return LEFT(cn(SLIDE)(PAIR(ZERO)(ZERO)))
 }
-/*
-console.log(toInt(DECREMENT(ONE)))
-console.log(toInt(DECREMENT(HUNDRED)))
-*/
 
-// addition
+print("DECREMENT ONE", toInt(DECREMENT(ONE)))
+print("DECREMENT THREE", toInt(DECREMENT(THREE)))
+
+/**
+ * addition operation using increment
+ */
+
 let ADD = function(cn1) {
   return function(cn2) {
     return cn2(INCREMENT)(cn1)
   }
 }
-/*
-console.log(toInt(ADD(ONE)(ONE)))
-*/
 
-let FIVE = ADD(TWO)(THREE)
+print("ADD ONE, ONE", toInt(ADD(ONE)(ONE)))
 
-// subtract
+/**
+ * subtract operation using decrement
+ */
+
 let SUBTRACT = function(cn1) {
   return function(cn2) {
     return cn2(DECREMENT)(cn1)
   }
 }
-/*
-console.log(toInt(SUBTRACT(TWO)(TWO)))
-*/
 
-// multiply
+print("SUBTRACT TWO, ONE", toInt(SUBTRACT(TWO)(ONE)))
+
+/**
+ * multiply operation using add
+ */
+
 let MULTIPLY = function(cn1) {
   return function(cn2) {
     return cn2(ADD(cn1))(ZERO)
   }
 }
-/*
-console.log(toInt(MULTIPLY(TWO)(TWO)))
-*/
 
-// power
+print("MULTIPLY TWO, TWO", toInt(MULTIPLY(TWO)(TWO)))
+
+/**
+ * power operation using multiply
+ */
+
 let POWER = function(cn1) {
   return function(cn2) {
     return cn2(MULTIPLY(cn1))(ONE)
   }
 }
-/*
-console.log(toInt(POWER(TWO)(TWO)))
-*/
 
-// less than or equals to
-let LESS_THAN_EQUALS_TO = function(cn1) {
+print("POWER THREE, TWO", toInt(POWER(THREE)(TWO)))
+
+/**
+ * more numbers..
+ */
+
+let FIVE = ADD(THREE)(TWO)
+let TEN = ADD(FIVE)(FIVE)
+let FIFTEEN = MULTIPLY(FIVE)(THREE)
+let HUNDRED = MULTIPLY(FIVE)(ADD(TEN)(TEN))
+
+/**
+ * compare operation: less than or equals to
+ */
+
+let IS_LESS_OR_EQUAL = function(cn1) {
   return function(cn2) {
     return IS_ZERO(SUBTRACT(cn1)(cn2))
   }
 }
-/*
-console.log(toBoolean(LESS_THAN_EQUALS_TO(TWO)(ONE)))
-console.log(toBoolean(LESS_THAN_EQUALS_TO(ONE)(TWO)))
-*/
 
-// modulo
+print("TWO <= ONE", toBoolean(IS_LESS_OR_EQUAL(TWO)(ONE)))
+print("ONE <= TWO", toBoolean(IS_LESS_OR_EQUAL(ONE)(TWO)))
+print("THREE <= THREE", toBoolean(IS_LESS_OR_EQUAL(THREE)(THREE)))
+
+/**
+ * cheated version of modulo operation
+ */
+
 let MOD_CHEAT = function(cn1) {
   return function(cn2) {
-    return IF(LESS_THAN_EQUALS_TO(cn2)(cn1))(
+    return IF(IS_LESS_OR_EQUAL(cn2)(cn1))(
       function(x) { return MOD_CHEAT(SUBTRACT(cn1)(cn2))(cn2)(x) }
     )(
       cn1
@@ -229,29 +291,35 @@ let MOD_CHEAT = function(cn1) {
   }
 }
 
-/*
-console.log(toInt(MOD_CHEAT(THREE)(TWO)))
-*/
+/**
+ * Y combinator to mimic recursion in the environment where we don't have
+ * recursion construct built-in
+ */
 
 let Y = function(f) {
   return (function(x) { return f(x(x)) })(function(x) {return f(x(x)) })
 }
 
-//console.log(Y(function(x) {return x + 1}))
+/**
+ * Z combinator is same as Y combinator but it's variant for strict-evaluation
+ * machine
+ */
 
 let Z = function(f) {
-  return (function(x) { return f(function(y) { return x(x)(y) }) })(function(x) {return f(function(y) { return x(x)(y) }) })
+  return (function(x) { 
+		return f(function(y) { return x(x)(y) }) }
+	)(function(x) {return f(function(y) { return x(x)(y) }) })
 }
 
-/*
-console.log(Z(function(x) {return x}))
-*/
+/**
+ * modulo operation using Z combinator
+ */
 
 let MOD = Z(
 	function(f) {
 		return function(cn1) {
   		return function(cn2) {
-				return IF(LESS_THAN_EQUALS_TO(cn2)(cn1))(
+				return IF(IS_LESS_OR_EQUAL(cn2)(cn1))(
 					function(x) { return f(SUBTRACT(cn1)(cn2))(cn2)(x) }
 				)(
 					cn1
@@ -260,23 +328,29 @@ let MOD = Z(
 		}
 	}
 )
-/*
-console.log(toInt(MOD(ADD(HUNDRED)(ONE))(THREE)))
-*/
+
+print("100 % 3", toInt(MOD(ADD(HUNDRED)(ONE))(THREE)))
+
+/**
+ * cheated version of factorial operation
+ */
+
 let FACT_CHEAT = function(cn) {
-  return IF(LESS_THAN_EQUALS_TO(cn)(ONE))(
+  return IF(IS_LESS_OR_EQUAL(cn)(ONE))(
 		ONE
 	)(
 		MULTIPLY(function(x) { return FACT_CHEAT(SUBTRACT(cn)(ONE))(x) })(cn)
 	)
 }
-/*
-console.log(toInt(FACT_CHEAT(THREE)))
-*/
+
+/**
+ * factorial operation using Z combinator
+ */
+
 let FACT = Z(
 	function(f){
 		return function(cn) {
-			return IF(LESS_THAN_EQUALS_TO(cn)(ONE))(
+			return IF(IS_LESS_OR_EQUAL(cn)(ONE))(
 				ONE
 			)(
 				MULTIPLY(function(x) { return f(SUBTRACT(cn)(ONE))(x) })(cn)
@@ -284,12 +358,12 @@ let FACT = Z(
 		}
 	}
 )
-/*
-console.log(toInt(FACT(FIVE)))
-*/
 
+print("factorial of FIVE", toInt(FACT(FIVE)))
 
-// list
+/**
+ * List data structure constructor
+ */
 
 let EMPTY = PAIR(TRUE)(TRUE)
 let PREPEND = function(l) {
@@ -297,7 +371,17 @@ let PREPEND = function(l) {
 		return PAIR(FALSE)(PAIR(x)(l))
 	}
 }
+
+/**
+ * List data structure predicate
+ */
+
 let IS_EMPTY = LEFT
+
+/**
+ * List data structure selector
+ */
+
 let HEAD = function(l) {
 	return LEFT(RIGHT(l))
 }
@@ -305,30 +389,9 @@ let TAIL = function(l) {
 	return RIGHT(RIGHT(l))
 }
 
-/*
-let l = PREPEND(PREPEND(PREPEND(EMPTY)(ONE))(TWO))(THREE)
-console.log(toInt(HEAD(l)))
-console.log(toInt(HEAD(TAIL(l))))
-console.log(toBoolean(IS_EMPTY(TAIL(TAIL(TAIL(l))))))
-*/
-
-let RANGE = Z(
-	function(f) {
-		return function(cn1) {
-			return function(cn2) {
-				return IF(LESS_THAN_EQUALS_TO(cn1)(cn2))(
-					function(x) { return PREPEND(f(INCREMENT(cn1))(cn2))(cn1)(x) }
-				)(
-					EMPTY
-				)
-			}
-		}
-	}
-)
-
-/*
-console.log(toInt(HEAD(TAIL(RANGE(TWO)(FIVE)))))
-*/
+/**
+ * helper function to process List data structure
+ */
 
 let toArray = function(proc) {
 	return function(f) {
@@ -341,9 +404,38 @@ let toArray = function(proc) {
 	}
 }
 
-/*
-console.log(toArray(RANGE(ONE)(FIVE))(function(n) { return toInt(n)}))
-*/
+let list = PREPEND(PREPEND(PREPEND(EMPTY)(ONE))(TWO))(THREE)
+print("list using prepend operation", 
+	toArray(list)(function(n) { return toInt(n) })
+)
+print("HEAD of list", toInt(HEAD(list)))
+print("HEAD of TAIL of list", toInt(HEAD(TAIL(list))))
+print("IS_EMPTY the TAIL of TAIL of TAIL of list", 
+	toBoolean(IS_EMPTY(TAIL(TAIL(TAIL(list))))))
+
+/**
+ * range operation using Z combinator and list
+ */
+
+let RANGE = Z(
+	function(f) {
+		return function(cn1) {
+			return function(cn2) {
+				return IF(IS_LESS_OR_EQUAL(cn1)(cn2))(
+					function(x) { return PREPEND(f(INCREMENT(cn1))(cn2))(cn1)(x) }
+				)(
+					EMPTY
+				)
+			}
+		}
+	}
+)
+
+print("RANGE from ONE to FIVE", toArray(RANGE(ONE)(FIVE))(function(n) { return toInt(n)}))
+
+/**
+ * fold operation using Z combinator
+ */
 
 let FOLD = Z(
 	function(f) {
@@ -360,10 +452,13 @@ let FOLD = Z(
 		}
 	}
 )
-/*
-console.log(toInt(FOLD(RANGE(ONE)(FIVE))(ZERO)(ADD)))
-*/
 
+print("FOLD [ONE..FIVE] using ZERO and ADD opeartion", 
+	toInt(FOLD(RANGE(ONE)(FIVE))(ZERO)(ADD)))
+
+/**
+ * map operation on list using fold
+ */
 let MAP = function(k) {
 	return function(f) {
 		return FOLD(k)(EMPTY)(function(l) {
@@ -374,11 +469,13 @@ let MAP = function(k) {
 	}
 }
 
-console.log(toArray(MAP(RANGE(ONE)(FIVE))(ADD(TWO)))(function(n){return toInt(n)}))
+print("MAP over [ONE..FIVE] using +2 operation", 
+	toArray(MAP(RANGE(ONE)(FIVE))(ADD(TWO)))(function(n){return toInt(n)}))
 
-// string
+/**
+ * encoding string and operations
+ */
 
-let TEN = MULTIPLY(FIVE)(TWO)
 let B = TEN
 let F = INCREMENT(B)
 let I = INCREMENT(F)
@@ -393,23 +490,23 @@ let toChar = function(c) {
 	return '0123456789BFiuz'.charAt(toInt(c))
 }
 
-/*
-console.log(toChar(I))
-*/
+print("I to character", toChar(I))
 
 let toString = function(s) {
 	return (toArray(s)(function(c) {return toChar(c)})).join('')
 }
 
-/*
-console.log(toString(FIZZBUZZ))
-*/
+print("FIZZBUZZ to string", toString(FIZZBUZZ))
+
+/**
+ * division operation using Z combinator
+ */
 
 let DIV = Z(
 	function(f) {
 		return function(cn1) {
 			return function(cn2) {
-				return IF(LESS_THAN_EQUALS_TO(cn2)(cn1))(
+				return IF(IS_LESS_OR_EQUAL(cn2)(cn1))(
 					function(x) { return INCREMENT(f(SUBTRACT(cn1)(cn2))(cn2))(x) }
 				)(
 					ZERO
@@ -419,9 +516,11 @@ let DIV = Z(
 	}
 )
 
-/*
-console.log(toInt(DIV(HUNDRED)(FIVE)))
-*/
+print("DIV HUNDRED, FIVE", toInt(DIV(HUNDRED)(FIVE)))
+
+/**
+ * List append operation
+ */
 
 let APPEND = function(l) {
 	return function(x) {
@@ -429,15 +528,19 @@ let APPEND = function(l) {
 	}
 }
 
-/*
-console.log(toArray(APPEND(EMPTY)(ONE))(function(n){return toInt(n)}))
-*/
+print("append ONE to EMPTY list", toArray(APPEND(EMPTY)(ONE))(function(n){
+	return toInt(n)
+}))
+
+/**
+ * convert number to list of digit
+ */
 
 let TO_DIGITS = Z(
 	function(f) {
 		return function(cn) {
 			return APPEND(
-				IF(LESS_THAN_EQUALS_TO(cn)(DECREMENT(TEN)))(
+				IF(IS_LESS_OR_EQUAL(cn)(DECREMENT(TEN)))(
 					EMPTY
 				)(
 					function(x) { return f(DIV(cn)(TEN))(x)}
@@ -446,11 +549,13 @@ let TO_DIGITS = Z(
 		}
 	}
 )
-/*
-console.log(toArray(TO_DIGITS(HUNDRED))(function(x){return toInt(x)}))
-*/
 
-let FIFTEEN = MULTIPLY(FIVE)(THREE)
+print("convert HUNDRED to list of ONE, ZERO, ZERO", 
+	toArray(TO_DIGITS(HUNDRED))(function(x){return toInt(x)}))
+
+/**
+ * fizz buzz program using functions only
+ */
 
 let fizzBuzzLC = MAP(RANGE(ONE)(HUNDRED))(function(n) {
 	return IF(IS_ZERO(MOD(n)(FIFTEEN)))(
@@ -464,4 +569,5 @@ let fizzBuzzLC = MAP(RANGE(ONE)(HUNDRED))(function(n) {
 	)))
 })
 
-//console.log(toArray(fizzBuzzLC)(function(n){return toString(n)}))
+print("fizz buzz using functions only", 
+	toArray(fizzBuzzLC)(function(n){return toString(n)}))
