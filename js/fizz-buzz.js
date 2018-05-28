@@ -4,7 +4,7 @@ const range = (start, end) => (
   Array.from(Array(end - start + 1).keys()).map(i => i + start)
 );
 
-let fizzBuzzString = range(1, 100).map(n => {
+let fizzBuzzJS = range(1, 100).map(n => {
   if (n % 15 === 0) {
     return 'FizzBuzz'
   } else if (n % 3 === 0) {
@@ -15,7 +15,7 @@ let fizzBuzzString = range(1, 100).map(n => {
     return n
   }
 })
-//console.log(fizzBuzzString.join(', '))
+//console.log(fizzBuzzStringJS)
 
 /**
 properties of a function:
@@ -175,6 +175,8 @@ let ADD = function(cn1) {
 console.log(toInt(ADD(ONE)(ONE)))
 */
 
+let FIVE = ADD(TWO)(THREE)
+
 // subtract
 let SUBTRACT = function(cn1) {
   return function(cn2) {
@@ -217,15 +219,249 @@ console.log(toBoolean(LESS_THAN_EQUALS_TO(ONE)(TWO)))
 */
 
 // modulo
-let MOD = function(cn1) {
+let MOD_CHEAT = function(cn1) {
   return function(cn2) {
     return IF(LESS_THAN_EQUALS_TO(cn2)(cn1))(
-      function(x) { return MOD(SUBTRACT(cn1)(cn2))(cn2)(x) }
+      function(x) { return MOD_CHEAT(SUBTRACT(cn1)(cn2))(cn2)(x) }
     )(
       cn1
     )
   }
 }
 
-console.log(toInt(MOD(THREE)(TWO)))
+/*
+console.log(toInt(MOD_CHEAT(THREE)(TWO)))
+*/
 
+let Y = function(f) {
+  return (function(x) { return f(x(x)) })(function(x) {return f(x(x)) })
+}
+
+//console.log(Y(function(x) {return x + 1}))
+
+let Z = function(f) {
+  return (function(x) { return f(function(y) { return x(x)(y) }) })(function(x) {return f(function(y) { return x(x)(y) }) })
+}
+
+/*
+console.log(Z(function(x) {return x}))
+*/
+
+let MOD = Z(
+	function(f) {
+		return function(cn1) {
+  		return function(cn2) {
+				return IF(LESS_THAN_EQUALS_TO(cn2)(cn1))(
+					function(x) { return f(SUBTRACT(cn1)(cn2))(cn2)(x) }
+				)(
+					cn1
+				)
+			}
+		}
+	}
+)
+/*
+console.log(toInt(MOD(ADD(HUNDRED)(ONE))(THREE)))
+*/
+let FACT_CHEAT = function(cn) {
+  return IF(LESS_THAN_EQUALS_TO(cn)(ONE))(
+		ONE
+	)(
+		MULTIPLY(function(x) { return FACT_CHEAT(SUBTRACT(cn)(ONE))(x) })(cn)
+	)
+}
+/*
+console.log(toInt(FACT_CHEAT(THREE)))
+*/
+let FACT = Z(
+	function(f){
+		return function(cn) {
+			return IF(LESS_THAN_EQUALS_TO(cn)(ONE))(
+				ONE
+			)(
+				MULTIPLY(function(x) { return f(SUBTRACT(cn)(ONE))(x) })(cn)
+			)
+		}
+	}
+)
+/*
+console.log(toInt(FACT(FIVE)))
+*/
+
+
+// list
+
+let EMPTY = PAIR(TRUE)(TRUE)
+let PREPEND = function(l) {
+	return function(x) {
+		return PAIR(FALSE)(PAIR(x)(l))
+	}
+}
+let IS_EMPTY = LEFT
+let HEAD = function(l) {
+	return LEFT(RIGHT(l))
+}
+let TAIL = function(l) {
+	return RIGHT(RIGHT(l))
+}
+
+/*
+let l = PREPEND(PREPEND(PREPEND(EMPTY)(ONE))(TWO))(THREE)
+console.log(toInt(HEAD(l)))
+console.log(toInt(HEAD(TAIL(l))))
+console.log(toBoolean(IS_EMPTY(TAIL(TAIL(TAIL(l))))))
+*/
+
+let RANGE = Z(
+	function(f) {
+		return function(cn1) {
+			return function(cn2) {
+				return IF(LESS_THAN_EQUALS_TO(cn1)(cn2))(
+					function(x) { return PREPEND(f(INCREMENT(cn1))(cn2))(cn1)(x) }
+				)(
+					EMPTY
+				)
+			}
+		}
+	}
+)
+
+/*
+console.log(toInt(HEAD(TAIL(RANGE(TWO)(FIVE)))))
+*/
+
+let toArray = function(proc) {
+	return function(f) {
+		var array = []
+		while(!toBoolean(IS_EMPTY(proc))) {
+			array.push(HEAD(proc))
+			proc = TAIL(proc)
+		}
+		return array.map(n => f(n))
+	}
+}
+
+/*
+console.log(toArray(RANGE(ONE)(FIVE))(function(n) { return toInt(n)}))
+*/
+
+let FOLD = Z(
+	function(f) {
+		return function(l) {
+			return function(z) {
+				return function(g) {
+					return IF(IS_EMPTY(l))(
+						z
+					)(
+						function(y) { return g(f(TAIL(l))(z)(g))(HEAD(l))(y)}
+					)
+				}
+			}
+		}
+	}
+)
+/*
+console.log(toInt(FOLD(RANGE(ONE)(FIVE))(ZERO)(ADD)))
+*/
+
+let MAP = function(k) {
+	return function(f) {
+		return FOLD(k)(EMPTY)(function(l) {
+			return function(x) {
+				return PREPEND(l)(f(x))
+			}
+		})
+	}
+}
+
+console.log(toArray(MAP(RANGE(ONE)(FIVE))(ADD(TWO)))(function(n){return toInt(n)}))
+
+// string
+
+let TEN = MULTIPLY(FIVE)(TWO)
+let B = TEN
+let F = INCREMENT(B)
+let I = INCREMENT(F)
+let U = INCREMENT(I)
+let ZED = INCREMENT(U)
+
+let FIZZ = PREPEND(PREPEND(PREPEND(PREPEND(EMPTY)(ZED))(ZED))(I))(F)
+let BUZZ = PREPEND(PREPEND(PREPEND(PREPEND(EMPTY)(ZED))(ZED))(U))(B)
+let FIZZBUZZ = PREPEND(PREPEND(PREPEND(PREPEND(BUZZ)(ZED))(ZED))(I))(F)
+
+let toChar = function(c) {
+	return '0123456789BFiuz'.charAt(toInt(c))
+}
+
+/*
+console.log(toChar(I))
+*/
+
+let toString = function(s) {
+	return (toArray(s)(function(c) {return toChar(c)})).join('')
+}
+
+/*
+console.log(toString(FIZZBUZZ))
+*/
+
+let DIV = Z(
+	function(f) {
+		return function(cn1) {
+			return function(cn2) {
+				return IF(LESS_THAN_EQUALS_TO(cn2)(cn1))(
+					function(x) { return INCREMENT(f(SUBTRACT(cn1)(cn2))(cn2))(x) }
+				)(
+					ZERO
+				)
+			}
+		}
+	}
+)
+
+/*
+console.log(toInt(DIV(HUNDRED)(FIVE)))
+*/
+
+let APPEND = function(l) {
+	return function(x) {
+		return FOLD(l)(PREPEND(EMPTY)(x))(PREPEND)
+	}
+}
+
+/*
+console.log(toArray(APPEND(EMPTY)(ONE))(function(n){return toInt(n)}))
+*/
+
+let TO_DIGITS = Z(
+	function(f) {
+		return function(cn) {
+			return APPEND(
+				IF(LESS_THAN_EQUALS_TO(cn)(DECREMENT(TEN)))(
+					EMPTY
+				)(
+					function(x) { return f(DIV(cn)(TEN))(x)}
+				)
+			)(MOD(cn)(TEN))
+		}
+	}
+)
+/*
+console.log(toArray(TO_DIGITS(HUNDRED))(function(x){return toInt(x)}))
+*/
+
+let FIFTEEN = MULTIPLY(FIVE)(THREE)
+
+let fizzBuzzLC = MAP(RANGE(ONE)(HUNDRED))(function(n) {
+	return IF(IS_ZERO(MOD(n)(FIFTEEN)))(
+		FIZZBUZZ
+	)(IF(IS_ZERO(MOD(n)(THREE)))(
+		FIZZ
+	)(IF(IS_ZERO(MOD(n)(FIVE)))(
+		BUZZ
+	)(
+		TO_DIGITS(n)
+	)))
+})
+
+//console.log(toArray(fizzBuzzLC)(function(n){return toString(n)}))
