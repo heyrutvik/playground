@@ -2,7 +2,7 @@
  * helper function to print output
  */
 let print = function(msg, output) { 
-	console.log(msg + ": " + output)
+  console.log(msg + ": " + output)
 }
 
 /**
@@ -33,13 +33,13 @@ print("javascript fizz buzz output", fizzBuzzJS)
  *
  * properties of a function:
  * (1) plumbing - a function application is just about replacing parameters of 
- * 		 the block with the arguments. (of course, if you just ignore the part of 
- * 		 execution)
+ *     the block with the arguments. (of course, if you just ignore the part of 
+ *     execution)
  * (2) currying - a function with any number of parameters can be rewritten as 
- * 		 as a function of single parameter.
+ *     as a function of single parameter.
  * (3) equality - functions are interchangeable if they produce identical 
- * 		 results when called with the same arguments. (regardless of their 
- * 		 implementation)
+ *     results when called with the same arguments. (regardless of their 
+ *     implementation)
  */
 
 /**
@@ -307,8 +307,8 @@ let Y = function(f) {
 
 let Z = function(f) {
   return (function(x) { 
-		return f(function(y) { return x(x)(y) }) }
-	)(function(x) {return f(function(y) { return x(x)(y) }) })
+    return f(function(y) { return x(x)(y) }) }
+  )(function(x) {return f(function(y) { return x(x)(y) }) })
 }
 
 /**
@@ -316,17 +316,17 @@ let Z = function(f) {
  */
 
 let MOD = Z(
-	function(f) {
-		return function(cn1) {
-  		return function(cn2) {
-				return IF(IS_LESS_OR_EQUAL(cn2)(cn1))(
-					function(x) { return f(SUBTRACT(cn1)(cn2))(cn2)(x) }
-				)(
-					cn1
-				)
-			}
-		}
-	}
+  function(f) {
+    return function(cn1) {
+      return function(cn2) {
+        return IF(IS_LESS_OR_EQUAL(cn2)(cn1))(
+          function(x) { return f(SUBTRACT(cn1)(cn2))(cn2)(x) }
+        )(
+          cn1
+        )
+      }
+    }
+  }
 )
 
 print("100 % 3", toInt(MOD(ADD(HUNDRED)(ONE))(THREE)))
@@ -337,10 +337,10 @@ print("100 % 3", toInt(MOD(ADD(HUNDRED)(ONE))(THREE)))
 
 let FACT_CHEAT = function(cn) {
   return IF(IS_LESS_OR_EQUAL(cn)(ONE))(
-		ONE
-	)(
-		MULTIPLY(function(x) { return FACT_CHEAT(SUBTRACT(cn)(ONE))(x) })(cn)
-	)
+    ONE
+  )(
+    MULTIPLY(function(x) { return FACT_CHEAT(SUBTRACT(cn)(ONE))(x) })(cn)
+  )
 }
 
 /**
@@ -348,15 +348,15 @@ let FACT_CHEAT = function(cn) {
  */
 
 let FACT = Z(
-	function(f){
-		return function(cn) {
-			return IF(IS_LESS_OR_EQUAL(cn)(ONE))(
-				ONE
-			)(
-				MULTIPLY(function(x) { return f(SUBTRACT(cn)(ONE))(x) })(cn)
-			)
-		}
-	}
+  function(f){
+    return function(cn) {
+      return IF(IS_LESS_OR_EQUAL(cn)(ONE))(
+        ONE
+      )(
+        MULTIPLY(function(x) { return f(SUBTRACT(cn)(ONE))(x) })(cn)
+      )
+    }
+  }
 )
 
 print("factorial of FIVE", toInt(FACT(FIVE)))
@@ -367,9 +367,9 @@ print("factorial of FIVE", toInt(FACT(FIVE)))
 
 let EMPTY = PAIR(TRUE)(TRUE)
 let PREPEND = function(l) {
-	return function(x) {
-		return PAIR(FALSE)(PAIR(x)(l))
-	}
+  return function(x) {
+    return PAIR(FALSE)(PAIR(x)(l))
+  }
 }
 
 /**
@@ -383,10 +383,10 @@ let IS_EMPTY = LEFT
  */
 
 let HEAD = function(l) {
-	return LEFT(RIGHT(l))
+  return LEFT(RIGHT(l))
 }
 let TAIL = function(l) {
-	return RIGHT(RIGHT(l))
+  return RIGHT(RIGHT(l))
 }
 
 /**
@@ -394,41 +394,41 @@ let TAIL = function(l) {
  */
 
 let toArray = function(proc) {
-	return function(f) {
-		var array = []
-		while(!toBoolean(IS_EMPTY(proc))) {
-			array.push(HEAD(proc))
-			proc = TAIL(proc)
-		}
-		return array.map(n => f(n))
-	}
+  return function(f) {
+    var array = []
+    while(!toBoolean(IS_EMPTY(proc))) {
+      array.push(HEAD(proc))
+      proc = TAIL(proc)
+    }
+    return array.map(n => f(n))
+  }
 }
 
 let list = PREPEND(PREPEND(PREPEND(EMPTY)(ONE))(TWO))(THREE)
 print("list using prepend operation", 
-	toArray(list)(function(n) { return toInt(n) })
+  toArray(list)(function(n) { return toInt(n) })
 )
 print("HEAD of list", toInt(HEAD(list)))
 print("HEAD of TAIL of list", toInt(HEAD(TAIL(list))))
 print("IS_EMPTY the TAIL of TAIL of TAIL of list", 
-	toBoolean(IS_EMPTY(TAIL(TAIL(TAIL(list))))))
+  toBoolean(IS_EMPTY(TAIL(TAIL(TAIL(list))))))
 
 /**
  * range operation using Z combinator and list
  */
 
 let RANGE = Z(
-	function(f) {
-		return function(cn1) {
-			return function(cn2) {
-				return IF(IS_LESS_OR_EQUAL(cn1)(cn2))(
-					function(x) { return PREPEND(f(INCREMENT(cn1))(cn2))(cn1)(x) }
-				)(
-					EMPTY
-				)
-			}
-		}
-	}
+  function(f) {
+    return function(cn1) {
+      return function(cn2) {
+        return IF(IS_LESS_OR_EQUAL(cn1)(cn2))(
+          function(x) { return PREPEND(f(INCREMENT(cn1))(cn2))(cn1)(x) }
+        )(
+          EMPTY
+        )
+      }
+    }
+  }
 )
 
 print("RANGE from ONE to FIVE", toArray(RANGE(ONE)(FIVE))(function(n) { return toInt(n)}))
@@ -438,39 +438,39 @@ print("RANGE from ONE to FIVE", toArray(RANGE(ONE)(FIVE))(function(n) { return t
  */
 
 let FOLD = Z(
-	function(f) {
-		return function(l) {
-			return function(z) {
-				return function(g) {
-					return IF(IS_EMPTY(l))(
-						z
-					)(
-						function(y) { return g(f(TAIL(l))(z)(g))(HEAD(l))(y)}
-					)
-				}
-			}
-		}
-	}
+  function(f) {
+    return function(l) {
+      return function(z) {
+        return function(g) {
+          return IF(IS_EMPTY(l))(
+            z
+          )(
+            function(y) { return g(f(TAIL(l))(z)(g))(HEAD(l))(y)}
+          )
+        }
+      }
+    }
+  }
 )
 
 print("FOLD [ONE..FIVE] using ZERO and ADD opeartion", 
-	toInt(FOLD(RANGE(ONE)(FIVE))(ZERO)(ADD)))
+  toInt(FOLD(RANGE(ONE)(FIVE))(ZERO)(ADD)))
 
 /**
  * map operation on list using fold
  */
 let MAP = function(k) {
-	return function(f) {
-		return FOLD(k)(EMPTY)(function(l) {
-			return function(x) {
-				return PREPEND(l)(f(x))
-			}
-		})
-	}
+  return function(f) {
+    return FOLD(k)(EMPTY)(function(l) {
+      return function(x) {
+        return PREPEND(l)(f(x))
+      }
+    })
+  }
 }
 
 print("MAP over [ONE..FIVE] using +2 operation", 
-	toArray(MAP(RANGE(ONE)(FIVE))(ADD(TWO)))(function(n){return toInt(n)}))
+  toArray(MAP(RANGE(ONE)(FIVE))(ADD(TWO)))(function(n){return toInt(n)}))
 
 /**
  * encoding string and operations
@@ -487,13 +487,13 @@ let BUZZ = PREPEND(PREPEND(PREPEND(PREPEND(EMPTY)(ZED))(ZED))(U))(B)
 let FIZZBUZZ = PREPEND(PREPEND(PREPEND(PREPEND(BUZZ)(ZED))(ZED))(I))(F)
 
 let toChar = function(c) {
-	return '0123456789BFiuz'.charAt(toInt(c))
+  return '0123456789BFiuz'.charAt(toInt(c))
 }
 
 print("I to character", toChar(I))
 
 let toString = function(s) {
-	return (toArray(s)(function(c) {return toChar(c)})).join('')
+  return (toArray(s)(function(c) {return toChar(c)})).join('')
 }
 
 print("FIZZBUZZ to string", toString(FIZZBUZZ))
@@ -503,17 +503,17 @@ print("FIZZBUZZ to string", toString(FIZZBUZZ))
  */
 
 let DIV = Z(
-	function(f) {
-		return function(cn1) {
-			return function(cn2) {
-				return IF(IS_LESS_OR_EQUAL(cn2)(cn1))(
-					function(x) { return INCREMENT(f(SUBTRACT(cn1)(cn2))(cn2))(x) }
-				)(
-					ZERO
-				)
-			}
-		}
-	}
+  function(f) {
+    return function(cn1) {
+      return function(cn2) {
+        return IF(IS_LESS_OR_EQUAL(cn2)(cn1))(
+          function(x) { return INCREMENT(f(SUBTRACT(cn1)(cn2))(cn2))(x) }
+        )(
+          ZERO
+        )
+      }
+    }
+  }
 )
 
 print("DIV HUNDRED, FIVE", toInt(DIV(HUNDRED)(FIVE)))
@@ -523,13 +523,13 @@ print("DIV HUNDRED, FIVE", toInt(DIV(HUNDRED)(FIVE)))
  */
 
 let APPEND = function(l) {
-	return function(x) {
-		return FOLD(l)(PREPEND(EMPTY)(x))(PREPEND)
-	}
+  return function(x) {
+    return FOLD(l)(PREPEND(EMPTY)(x))(PREPEND)
+  }
 }
 
 print("append ONE to EMPTY list", toArray(APPEND(EMPTY)(ONE))(function(n){
-	return toInt(n)
+  return toInt(n)
 }))
 
 /**
@@ -537,37 +537,37 @@ print("append ONE to EMPTY list", toArray(APPEND(EMPTY)(ONE))(function(n){
  */
 
 let TO_DIGITS = Z(
-	function(f) {
-		return function(cn) {
-			return APPEND(
-				IF(IS_LESS_OR_EQUAL(cn)(DECREMENT(TEN)))(
-					EMPTY
-				)(
-					function(x) { return f(DIV(cn)(TEN))(x)}
-				)
-			)(MOD(cn)(TEN))
-		}
-	}
+  function(f) {
+    return function(cn) {
+      return APPEND(
+        IF(IS_LESS_OR_EQUAL(cn)(DECREMENT(TEN)))(
+          EMPTY
+        )(
+          function(x) { return f(DIV(cn)(TEN))(x)}
+        )
+      )(MOD(cn)(TEN))
+    }
+  }
 )
 
 print("convert HUNDRED to list of ONE, ZERO, ZERO", 
-	toArray(TO_DIGITS(HUNDRED))(function(x){return toInt(x)}))
+  toArray(TO_DIGITS(HUNDRED))(function(x){return toInt(x)}))
 
 /**
  * fizz buzz program using functions only
  */
 
 let fizzBuzzLC = MAP(RANGE(ONE)(HUNDRED))(function(n) {
-	return IF(IS_ZERO(MOD(n)(FIFTEEN)))(
-		FIZZBUZZ
-	)(IF(IS_ZERO(MOD(n)(THREE)))(
-		FIZZ
-	)(IF(IS_ZERO(MOD(n)(FIVE)))(
-		BUZZ
-	)(
-		TO_DIGITS(n)
-	)))
+  return IF(IS_ZERO(MOD(n)(FIFTEEN)))(
+    FIZZBUZZ
+  )(IF(IS_ZERO(MOD(n)(THREE)))(
+    FIZZ
+  )(IF(IS_ZERO(MOD(n)(FIVE)))(
+    BUZZ
+  )(
+    TO_DIGITS(n)
+  )))
 })
 
 print("fizz buzz using functions only", 
-	toArray(fizzBuzzLC)(function(n){return toString(n)}))
+  toArray(fizzBuzzLC)(function(n){return toString(n)}))
