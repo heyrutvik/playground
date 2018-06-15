@@ -65,8 +65,15 @@ or' :: Bool -> Bool -> Bool
 True `or'` _ = True
 False `or'` b = b
 
+or'' :: Bool -> Bool -> Bool
+or'' a b | a == b && a == False = False
+         | otherwise = True
+
 mult :: Num a => a -> a -> a -> a
 mult x y z = x * y * z
 
 mult' :: Num a => a -> (a -> (a -> a))
 mult' = \x -> (\y -> (\z -> x * y * z))
+
+myAnd :: [Bool] -> Bool
+myAnd = foldr (&&) True
