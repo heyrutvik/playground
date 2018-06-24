@@ -111,11 +111,31 @@ p''' = symbol "[" >>= \_ ->
        symbol "]" >>= \_ ->
        return (n : ns)
 
+{-
+expr = term ("+" expr | "-" expr | @)
+term = power ("*" term | "/" term | @)
+power = factor ("^" power | @)
+factor = "(" expr ")" | nat
+nat = 0 | 1 | 2 | 3 | ...
+
+where @ = empty string
+-}
+
 expr :: Parser Int
-expr = term >>= (\t -> (symbol "+" >>= \_ -> expr >>= \e -> return (t + e)) +++ return t)
+expr = term >>= \t ->
+       ((symbol "+" >>= \_ -> expr >>= \e -> return (t + e)) +++
+       (symbol "-" >>= \_ -> expr >>= \e -> return (t - e)) +++
+       return t)
 
 term :: Parser Int
-term = factor >>= (\f -> (symbol "*" >>= \_ -> term >>= \t -> return (f * t)) +++ return f)
+term = power >>= \f ->
+       ((symbol "*" >>= \_ -> term >>= \t -> return (f * t)) +++
+       (symbol "/" >>= \_ -> term >>= \t -> return (f `div` t)) +++
+       return f)
+
+power :: Parser Int
+power = factor >>= \f ->
+       (symbol "^" >>= \_ -> power >>= \t -> return (f ^ t)) +++ return f
 
 factor :: Parser Int
 factor = (symbol "(" >>= \_ ->
@@ -124,10 +144,13 @@ factor = (symbol "(" >>= \_ ->
          return e) +++ natural
 
 eval :: String -> Int
-eval xs = case parse expr xs of
-            [(n, [])] -> n
-            [(_, out)] -> error ("unconsumed input " ++ out)
-            [] -> error "invalid input"
+eval = mkEval expr
+
+mkEval :: Parser Int -> String -> Int
+mkEval p s = case parse p s of
+               [(n, [])] -> n
+               [(_, out)] -> error ("unconsumed input " ++ out)
+               [] -> error "invalid input"
 
 -- Exercises
 
@@ -139,3 +162,24 @@ newline = char '\n'
 
 comment :: Parser ()
 comment = symbol "--" >>= \_ -> many alphanum >>= \_ -> (newline >>= \_ -> return ()) +++ failure
+
+{-
+expr = expr - nat | nat
+nat = 0 | 1 | 2 | 3 | ...
+-}
+
+-- loop forever becuase `expr` defined recusrivly on its left side
+expr' :: Parser Int
+expr' = expr' >>= \e -> symbol "-" >>= \_ -> natural >>= \n -> return (e - n) +++ natural
+
+eval' :: String -> Int
+eval' = mkEval expr'
+
+-- take number and then repaet `"-" nat` pattern and fold using subtract operation
+expr'' :: Parser Int
+expr'' = natural >>= \n ->
+         (many (symbol "-" >>= \_ -> natural)) >>= \ns ->
+         return (foldl (-) n ns)
+
+eval'' :: String -> Int
+eval'' = mkEval expr''
