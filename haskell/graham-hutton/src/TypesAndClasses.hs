@@ -16,7 +16,6 @@ inc = add' 1
 type notation `->` is right associative
 functon application is left associative
 -}
-
 {-
 ['a', 'b', 'c'] :: [Char]
 ('a', 'b', 'c') :: (Char, Char, Char)
@@ -24,7 +23,6 @@ functon application is left associative
 ([False, True], ['0', '1']) :: ([Bool], [Char])
 [tail, init, reverse] :: [[a] -> [a]]
 -}
-
 second :: [a] -> a
 second xs = head (tail xs)
 

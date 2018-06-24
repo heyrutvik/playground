@@ -1,6 +1,6 @@
 module HigherOrderFunctions where
 
-import Data.Char
+import           Data.Char
 
 length' :: [a] -> Int
 length' = foldr (\_ -> \v -> 1 + v) 0
@@ -18,8 +18,8 @@ type Bit = Int
 
 bin2int :: [Bit] -> Int
 bin2int bits = sum [w * b | (w, b) <- zip weights bits]
-               where
-                 weights = iterate (*2) 1
+  where
+    weights = iterate (* 2) 1
 
 bin2int' :: [Bit] -> Int
 bin2int' = foldr (\x y -> x + 2 * y) 0
@@ -35,7 +35,7 @@ encode :: String -> [Bit]
 encode = concat . map (make8 . int2bin . ord)
 
 chop8 :: [Bit] -> [[Bit]]
-chop8 [] = []
+chop8 []   = []
 chop8 bits = take 8 bits : chop8 (drop 8 bits)
 
 decode :: [Bit] -> String
@@ -61,19 +61,27 @@ myAny f = (foldr (||) False) . (map f)
 
 myTakeWhile :: (a -> Bool) -> [a] -> [a]
 myTakeWhile _ [] = []
-myTakeWhile p (x : xs) | p x = x : myTakeWhile p xs
-                       | otherwise = []
+myTakeWhile p (x:xs)
+  | p x = x : myTakeWhile p xs
+  | otherwise = []
 
 myDropWhile :: (a -> Bool) -> [a] -> [a]
 myDropWhile _ [] = []
-myDropWhile p (x : xs) | p x = myDropWhile p xs
-                       | otherwise = xs
+myDropWhile p (x:xs)
+  | p x = myDropWhile p xs
+  | otherwise = xs
 
 myMap :: (a -> b) -> [a] -> [b]
 myMap f = foldr (\x y -> f x : y) []
 
 myFilter :: (a -> Bool) -> [a] -> [a]
-myFilter p = foldr (\x y -> if p x then x : y else y) []
+myFilter p =
+  foldr
+    (\x y ->
+       if p x
+         then x : y
+         else y)
+    []
 
 dec2int :: [Int] -> Int
 dec2int = base2int 10
@@ -83,30 +91,35 @@ bin2int'' = base2int 2
 
 base2int :: Int -> [Int] -> Int
 base2int b xs = sum [y * w | (y, w) <- zip ys weights]
-             where
-               weights = (map (b^) [0..])
-               ys = reverse xs
+  where
+    weights = (map (b ^) [0 ..])
+    ys = reverse xs
 
-inc = (+1)
-double = (*2)
+inc = (+ 1)
+
+double = (* 2)
+
 doubleThenInc = inc . double
-incThenDouble = double . inc
-incThenDouble' = compose [inc, double]
-doubleThenInc' = compose [double, inc]
--- incThenDouble 1 == doubleThenInc' 1
 
+incThenDouble = double . inc
+
+incThenDouble' = compose [inc, double]
+
+doubleThenInc' = compose [double, inc]
+
+-- incThenDouble 1 == doubleThenInc' 1
 -- won't compile becuase compose take list of function which has same type
 -- here `map (^2)` and `filter even` has same type [a] -> [a]
 -- but sum has type [a] -> a
 -- sumsqreven = compose [sum, map (^2), filter even]
-
 plus :: Num a => (a, a) -> a
 plus (x, y) = x + y
 
 my2curry :: ((a, b) -> c) -> a -> b -> c
-my2curry f = \x -> \y -> f(x, y)
+my2curry f = \x -> \y -> f (x, y)
 
 cplus = my2curry plus
+
 inc' = cplus 1
 
 -- ce is curried expression
@@ -116,8 +129,9 @@ my2uncurry ce (x, y) = ce x y
 ucplus = my2uncurry cplus
 
 unfold :: (t -> Bool) -> (t -> a) -> (t -> t) -> t -> [a]
-unfold p h t x | p x = []
-               | otherwise = h x : unfold p h t (t x)
+unfold p h t x
+  | p x = []
+  | otherwise = h x : unfold p h t (t x)
 
 int2bin' :: Int -> [Bit]
 int2bin' = unfold (== 0) (`mod` 2) (`div` 2)
