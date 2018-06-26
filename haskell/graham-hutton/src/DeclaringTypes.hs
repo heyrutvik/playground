@@ -54,12 +54,25 @@ int2nat :: Int -> Nat
 int2nat 0 = Zero
 int2nat n = Succ (int2nat (n - 1))
 
-add :: Nat -> Nat -> Nat
-add m n = int2nat (nat2int m + nat2int n)
-
 add' :: Nat -> Nat -> Nat
-add' Zero n     = n
-add' (Succ m) n = Succ (add' m n)
+add' m n = int2nat (nat2int m + nat2int n)
+
+add :: Nat -> Nat -> Nat
+add Zero n     = n
+add (Succ m) n = Succ (add m n)
+
+{-
+mult 3 2
+add 2 (mult 2 2)
+add 2 (add 2 (mult 1 2))
+add 2 (add 2 (2))
+add 2 4
+6
+-}
+mult :: Nat -> Nat -> Nat
+mult Zero n        = Zero
+mult (Succ Zero) n = n
+mult (Succ m) n    = add (n) (mult m n)
 
 data List a
   = Nil
@@ -159,3 +172,40 @@ substs p = map (zip vs) (bools (length vs))
 
 isTaut :: Prop -> Bool
 isTaut p = and [eval s p | s <- substs p]
+
+--
+data Ordering'
+  = LT'
+  | EQ'
+  | GT'
+  deriving (Show, Eq)
+
+compare' :: Ord a => a -> a -> Ordering'
+compare' m n
+  | m < n = LT'
+  | m > n = GT'
+  | otherwise = EQ'
+
+occurs' :: Int -> Tree -> Bool
+occurs' m (Leaf n) = (compare' m n) == EQ'
+occurs' m (Node l n r) =
+  case compare' m n of
+    EQ' -> True
+    LT' -> occurs' m l
+    GT' -> occurs' m r
+
+data BTree
+  = BLeaf Int
+  | BNode BTree
+          BTree
+
+countLeaf :: BTree -> Int
+countLeaf (BLeaf n)   = 1
+countLeaf (BNode l r) = countLeaf l + countLeaf r
+
+t1 :: BTree
+t1 = BNode (BNode (BLeaf 1) (BLeaf 2)) (BLeaf 3)
+
+balanced :: BTree -> Bool
+balanced (BLeaf n)   = True
+balanced (BNode l r) = countLeaf l == countLeaf r && balanced l && balanced r
