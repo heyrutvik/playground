@@ -173,6 +173,29 @@ substs p = map (zip vs) (bools (length vs))
 isTaut :: Prop -> Bool
 isTaut p = and [eval s p | s <- substs p]
 
+-- Abstract Machine
+
+data Expr = Val Int | Add Expr Expr
+
+-- simple evaluator
+value' :: Expr -> Int
+value' (Val n) = n
+value' (Add l r) = value' l + value' r
+
+type Cont = [Op]
+data Op = EVAL Expr | ADD Int
+
+-- evaluator using control stack
+eval' :: Expr -> Cont -> Int
+eval' (Val n) c = exec c n
+eval' (Add l r) c = eval' l (EVAL r : c)
+
+exec :: Cont -> Int -> Int
+exec [] n = n
+exec (EVAL y : c) n = eval' y (ADD n : c)
+exec (ADD n : c) m = exec c (n + m)
+
+value e = eval' e []
 --
 data Ordering'
   = LT'
