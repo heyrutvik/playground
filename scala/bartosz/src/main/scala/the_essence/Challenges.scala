@@ -9,8 +9,8 @@ object Challenges {
   def compose[A, B, C](g: B => C, f: A => B): A => C = x => g(f(x))
 
   // test that composition respects identity
-  def idTest[A, B](f: A => B)(x: A): Boolean = {
-    f(x) == compose(f, id[A])(x) == compose(id[B], f)(x)
+  def law[A, B](f: A => B)(x: A): Boolean = {
+    f(x) == compose(f, id[A])(x) && f(x) == compose(id[B], f)(x)
   }
 
   // yes, www is a category where webpages are objects and hyperlink between them are morphisms.
