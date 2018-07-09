@@ -94,3 +94,13 @@ mult' = \x -> (\y -> (\z -> x * y * z))
 
 myAnd :: [Bool] -> Bool
 myAnd = foldr (&&) True
+
+--
+
+g :: Int -> Int
+g 0 = 0
+g n = n - g (g (n - 1))
+
+h :: Int -> Int
+h 0 = 0
+h n = n - h (h (h (n - 1)))
