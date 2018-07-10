@@ -1,4 +1,4 @@
-package the_essence
+package the_essence_1
 
 object Challenges {
 
