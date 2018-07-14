@@ -36,6 +36,15 @@ object Demo {
     }
   }
 
+  def andThen1[A, B](p: A => Parser[A])(q: A => Parser[A]): A => Parser[A] = { a =>
+    { s =>
+      parse(p(a))(s) match {
+        case None => None
+        case Some((a, r)) => parse(q(a))(r)
+      }
+    }
+  }
+
   /**
     * parser choice
     */
@@ -137,7 +146,7 @@ object Demo {
   def jsArrayParser: Parser[List[Int]] = {
     andThen(symbol("[")) { _ =>
       andThen(natural) { n =>
-        andThen(many(andThen(symbol(",")) { _ => natural})) { ns =>
+        andThen(many(andThen(symbol(",")) { _ => natural })) { ns =>
           andThen(symbol("]")) { _ =>
             unit(n :: ns)
           }
