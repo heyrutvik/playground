@@ -148,16 +148,6 @@ object Demo {
 
   /**
     * Arithmetic expression parser
-    *
-    * /**
-    * * Parse Grammar
-    * *
-    * * expr ::= term (+ expr | @)
-    * * term ::= factor (* term | @)
-    * * factor ::= (expr) | nat
-    * * nat ::= 0 | 1 | 2 | ...
-    * *
-    **/
     */
 
   def expr: Parser[Int] = {
