@@ -1,0 +1,40 @@
+#lang pie
+
+(claim step-+ (-> Nat Nat))
+(define step-+
+  (lambda (+-so-far)
+        (add1 +-so-far)))
+
+(claim + (-> Nat Nat Nat))
+(define +
+  (lambda (n m)
+    (iter-Nat
+      n
+      m
+      step-+)))
+
+(claim step-guess (-> Nat Nat Nat))
+(define step-guess
+  (lambda (n-1 guess-so-far)
+        (+ (add1 n-1) guess-so-far)))
+
+(claim guess (-> Nat Nat))
+(define guess
+  (lambda (n)
+    (rec-Nat
+      n
+      0
+      step-guess)))
+
+(claim step-* (-> Nat Nat Nat Nat))
+(define step-*
+  (lambda (m n-1 *-so-far)
+      (+ m *-so-far)))
+
+(claim * (-> Nat Nat Nat))
+(define *
+  (lambda (n m)
+    (rec-Nat
+      n
+      0
+      (step-* m))))
