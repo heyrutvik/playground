@@ -1,0 +1,67 @@
+#lang pie
+
+(claim +
+  (-> Nat Nat Nat))
+(define +
+  (lambda (n m)
+    (iter-Nat
+      n
+      m
+      (lambda (+-so-far)
+        (add1 +-so-far)))))
+
+(claim twice
+  (-> Nat Nat))
+(define twice
+  (lambda (n)
+    (+ n n)))
+
+(claim double
+  (-> Nat Nat))
+(define double
+  (lambda (n)
+    (iter-Nat
+      n
+      0
+      (+ 2))))
+
+(claim add1+=+add1
+  (Pi ((n Nat)(m Nat))
+    (= Nat (add1 (+ n m)) (+ n (add1 m)))))
+(define add1+=+add1
+  TODO)
+
+(claim mot-twice=double
+  (-> Nat U))
+(define mot-twice=double
+  (lambda (n)
+    (= Nat (twice n) (double n))))
+
+(claim mot-replace
+  (-> Nat Nat U))
+(define mot-replace
+  (lambda (n k)
+    (= Nat (add1 k) (add1 (add1 (double n))))))
+
+(claim step-twice=double
+  (Pi ((n-1 Nat))
+    (-> (mot-twice=double n-1)
+        (mot-twice=double (add1 n-1)))))
+(define step-twice=double
+  (lambda (n-1)
+    (lambda (proof-so-far)
+      (replace (add1+=+add1 n-1 n-1)
+        (mot-replace n-1)
+        (cong proof-so-far (+ 2))))))
+
+(claim twice=double
+  (Pi ((n Nat))
+    (= Nat (twice n) (double n))))
+(define twice=double
+  (lambda (n)
+    (ind-Nat
+      n
+      mot-twice=double
+      (same zero)
+      step-twice=double)))
+      
