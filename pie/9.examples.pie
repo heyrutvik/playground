@@ -25,11 +25,31 @@
       0
       (+ 2))))
 
+(claim mot-add1+=+add1
+  (-> Nat Nat U))
+(define mot-add1+=+add1
+  (lambda (j n)
+    (= Nat (add1 (+ n j)) (+ n (add1 j)))))
+
+(claim step-add1+=+add1
+  (Pi ((k Nat) (n-1 Nat))
+    (-> (= Nat (add1 (+ n-1 k)) (+ n-1 (add1 k)))
+        (= Nat (add1 (add1 (+ n-1 k))) (add1 (+ n-1 (add1 k)))))))
+(define step-add1+=+add1
+  (lambda (k n-1)
+    (lambda (add1+=+add1-so-far)
+      (cong add1+=+add1-so-far (+ 1)))))
+
 (claim add1+=+add1
   (Pi ((n Nat)(m Nat))
     (= Nat (add1 (+ n m)) (+ n (add1 m)))))
 (define add1+=+add1
-  TODO)
+  (lambda (n m)
+    (ind-Nat
+      n
+      (mot-add1+=+add1 m)
+      (same (add1 m))
+      (step-add1+=+add1 m))))
 
 (claim mot-twice=double
   (-> Nat U))
