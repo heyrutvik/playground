@@ -76,3 +76,78 @@
 (define one-not-six
   (lambda (1=6)
     (zero-not-add1 4 (sub1= 0 5 1=6))))
+
+;; head of vector
+(claim mot-front
+  (Pi ((E U)
+       (k Nat))
+    (-> (Vec E k)
+        U)))
+(define mot-front
+  (lambda (E k vs)
+    (Pi ((j Nat))
+      (-> (= Nat k (add1 j))
+          E))))
+
+(claim step-front
+  (Pi ((E U)
+       (l Nat)
+       (v E)
+       (vs (Vec E l)))
+    (-> (mot-front E l vs)
+        (mot-front E (add1 l) (vec:: v vs)))))
+(define step-front
+  (lambda (E l v vs)
+    (lambda (front-so-far)
+      (lambda (j add1l=add1j)
+        v))))
+
+(claim front
+  (Pi ((E U)
+       (l Nat))
+    (-> (Vec E (add1 l))
+      E)))
+(define front
+  (lambda (E l)
+    (lambda (vs)
+      ((ind-Vec
+        (add1 l)
+        vs
+        (mot-front E)
+        (lambda (j zero=add1j)
+          (ind-Absurd
+            (zero-not-add1 j zero=add1j)
+            E))
+        (step-front E)) l (same (add1 l))))))
+
+;; "every statement is either true or false" as a type. (principle of excluded middle)
+(claim pem
+  (Pi ((X U))
+    (Either X
+            (-> X Absurd))))
+
+;; "every statement is either true or false" is false is false.
+(claim pem-not-false
+  (Pi ((X U))
+    (->
+      (-> (Either X (-> X Absurd))
+        Absurd)
+    Absurd)))
+(define pem-not-false
+  (lambda (X)
+    (lambda (pem-false)
+      (pem-false
+        (right
+          (lambda (x)
+            (pem-false (left x))))))))
+
+;; `pem` is same as saying "every statement is decidable"
+(claim Dec
+  (-> U U))
+(define Dec
+  (lambda (X)
+    (Either X (-> X Absurd))))
+
+(claim pem-using-dec
+  (Pi ((X U))
+    (Dec X)))
