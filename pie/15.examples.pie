@@ -1,0 +1,78 @@
+#lang pie
+
+;; consequences of comparing different combinations of Nats
+(claim =consequence
+  (-> Nat Nat U))
+(define =consequence
+  (lambda (n m)
+    (which-Nat
+      n
+      (which-Nat
+        m
+        Trivial
+        (lambda (m-1)
+          Absurd))
+      (lambda (n-1)
+        (which-Nat
+          m
+          Absurd
+          (lambda (m-1)
+            (= Nat n-1 m-1)))))))
+
+;; consequences of comparing same Nat
+;; rules out absurd possibilities
+(claim =consequence-same
+  (Pi ((n Nat))
+    (=consequence n n)))
+(define =consequence-same
+  (lambda (n)
+    (ind-Nat
+      n
+      (lambda (k)
+        (=consequence k k))
+      sole
+      (lambda (n-1 cs)
+        (same n-1)))))
+
+;; consequences of comparing any Nat
+;; aka use-Nat=
+(claim =consequence-any
+  (Pi ((n Nat)
+       (m Nat))
+    (-> (= Nat n m)
+        (=consequence n m))))
+(define =consequence-any
+  (lambda (n m)
+    (lambda (n=m)
+      (replace
+        n=m
+        (lambda (k)
+          (=consequence n k))
+        (=consequence-same n)))))
+
+;; if zero is (add1 n) then anything 
+(claim zero-not-add1
+  (Pi ((n Nat))
+    (-> (= Nat zero (add1 n))
+        Absurd)))
+(define zero-not-add1
+  (lambda (n)
+    (=consequence-any zero (add1 n))))
+
+;; if (add1 n) is (add1 m) then n is m
+(claim sub1=
+  (Pi ((n Nat)
+       (m Nat))
+    (-> (= Nat (add1 n) (add1 m))
+        (= Nat n m))))
+(define sub1=
+  (lambda (n m)
+    (=consequence-any (add1 n) (add1 m))))
+
+;; if one is six then anything
+(claim one-not-six
+  (-> (= Nat 1 6)
+      Absurd))
+(define one-not-six
+  (lambda (1=6)
+    (zero-not-add1 4 (sub1= 0 5 1=6))))
