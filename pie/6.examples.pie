@@ -1,0 +1,35 @@
+#lang pie
+
+(claim id
+  (Pi ((T U))
+    (-> T T)))
+(define id
+  (lambda (T)
+    (lambda (t) t)))
+
+(claim id-pie
+  (Pi ((T U))
+    (Pi ((t T))
+      T)))
+(define id-pie
+  (lambda (T)
+    (lambda (t)
+      t)))
+
+(claim first
+  (Pi ((E U))
+    (Pi ((l Nat))
+      (Pi ((vs (Vec E (add1 l))))
+        E))))
+(define first
+  (lambda (E)
+    (lambda (l)
+      (lambda (vs)
+        (head vs)))))
+
+(claim rest
+  (Pi ((E U) (l Nat) (vs (Vec E (add1 l))))
+    (Vec E l)))
+(define rest
+  (lambda (E l vs)
+    (tail vs)))

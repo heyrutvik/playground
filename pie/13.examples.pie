@@ -1,0 +1,94 @@
+#lang pie
+
+(claim +
+  (-> Nat Nat Nat))
+(define +
+  (lambda (n m)
+    (iter-Nat
+      n
+      m
+      (lambda (+-so-far)
+        (add1 +-so-far)))))
+
+(claim double
+  (-> Nat Nat))
+(define double
+  (lambda (n)
+    (iter-Nat
+      n
+      0
+      (+ 2))))
+
+(claim Even
+  (-> Nat U))
+(define Even
+  (lambda (n)
+    (Sigma ((a Nat))
+      (= Nat n (double a)))))
+
+(claim zero-is-even
+  (Even 0))
+(define zero-is-even
+  (cons 0 (same 0)))
+
+(claim Odd
+  (-> Nat U))
+(define Odd
+  (lambda (n)
+    (Sigma ((a Nat))
+      (= Nat n (add1 (double a))))))
+
+(claim one-is-odd
+  (Odd 1))
+(define one-is-odd
+  (cons 0 (same 1)))
+
+(claim even+1->odd
+  (Pi ((n Nat))
+    (-> (Even n)
+        (Odd (add1 n)))))
+(define even+1->odd
+  (lambda (n p-e)
+    (cons (car p-e)
+      (cong (cdr p-e) (+ 1)))))
+
+(claim odd+1->even
+  (Pi ((n Nat))
+    (-> (Odd n)
+        (Even (add1 n)))))
+(define odd+1->even
+  (lambda (n p-e)
+    (cons (add1 (car p-e))
+      (cong (cdr p-e) (+ 1)))))
+
+(claim mot-even-or-odd
+  (-> Nat U))
+(define mot-even-or-odd
+  (lambda (k)
+    (Either (Even k) (Odd k))))
+
+(claim step-even-or-odd
+  (Pi ((n-1 Nat))
+    (-> (mot-even-or-odd n-1)
+        (mot-even-or-odd (add1 n-1)))))
+(define step-even-or-odd
+  (lambda (n-1 proof-n-1)
+    (ind-Either
+      proof-n-1
+      (lambda (t)
+        (mot-even-or-odd (add1 n-1)))
+      (lambda (p-e)
+        (right (even+1->odd n-1 p-e)))
+      (lambda (p-o)
+        (left (odd+1->even n-1 p-o))))))
+
+(claim even-or-odd
+  (Pi ((n Nat))
+    (Either (Even n) (Odd n))))
+(define even-or-odd
+  (lambda (n)
+    (ind-Nat
+      n
+      mot-even-or-odd
+      (left zero-is-even)
+      step-even-or-odd)))
