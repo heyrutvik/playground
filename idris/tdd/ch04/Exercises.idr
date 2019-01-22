@@ -1,5 +1,7 @@
 module Exercises
 
+import Data.Vect
+
 data Tree : Type -> Type where
   Empty : Ord t => Tree t
   Node : Ord t => (left : Tree t) -> (val : t) -> (right : Tree t) -> Tree t
@@ -59,3 +61,12 @@ biggestTriangle (Primitive s) = Nothing
 biggestTriangle (Combine x y) = maxMaybe (biggestTriangle x) (biggestTriangle y)
 biggestTriangle (Rotate x y) = maxMaybe (biggestTriangle y) Nothing
 biggestTriangle (Translate x y z) = maxMaybe (biggestTriangle z) Nothing
+
+takeVec : (k : Nat) -> Vect (k+n) t -> Vect k t
+takeVec Z xs = []
+takeVec (S k) (x :: xs) = x :: (takeVec k xs)
+
+sumEntries : Num a => (pos : Integer) -> Vect n a -> Vect n a -> Maybe a
+sumEntries {n} pos xs ys = case integerToFin pos n of
+                            Nothing => Nothing
+                            (Just x) => Just ((Vect.index x xs) + (Vect.index x ys))
