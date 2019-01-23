@@ -1,6 +1,7 @@
 module Exercises
 
 import System
+import Data.Vect
 
 greeting : IO ()
 greeting = do
@@ -67,4 +68,53 @@ my_repl prompt onInput = do
   my_repl prompt onInput
 
 my_replWith : (state : a) -> (prompt : String) -> (onInput : a -> String -> Maybe (String, a)) -> IO ()
-my_replWith state prompt onInput = ?my_replWith_rhs
+my_replWith state prompt onInput = do
+  putStr prompt
+  input <- getLine
+  case onInput state input of
+       Nothing => pure ()
+       (Just (output, newState)) => do
+         putStr output
+         my_replWith newState prompt onInput
+
+my_replWith_test : IO ()
+my_replWith_test = my_replWith [] "write: " processInput where
+  processInput : List String -> String -> Maybe (String, List String)
+  processInput xs "" = Nothing
+  processInput xs input = (Just ("total input: " ++ (cast (length xs)) ++ "\n", input :: xs))
+
+readToBlank : IO (List String)
+readToBlank = do
+  x <- getLine
+  if (x == "")
+    then pure []
+    else do xs <- readToBlank
+            pure (x :: xs)
+
+readAndSave : IO ()
+readAndSave = do
+  putStrLn "enter some text: "
+  text <- readToBlank
+  putStr "enter file path to store text: "
+  filePath <- getLine
+  Right _ <- writeFile filePath (unlines text) | Left err => pure ()
+  putStrLn "text stored."
+
+readVect : (file : File) -> IO (n ** Vect n String)
+readVect file = do
+  eof <- fEOF file
+  if (eof == True)
+    then pure (_ ** [])
+    else (
+      do
+        Right line <- fGetLine file | Left err => pure (_ ** [])
+        (_ ** lines) <- readVect file
+        pure (_ ** line :: lines)
+    )
+
+readVectFile : (filename : String) -> IO (n ** Vect n String)
+readVectFile filename = do
+  Right file <- openFile filename Read | Left err => pure (_ ** [])
+  content <- readVect file
+  closeFile file
+  pure content
