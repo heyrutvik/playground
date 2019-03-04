@@ -56,4 +56,4 @@ processInput store input = case parse input of
                                 (Just Quit) => Nothing
 
 main : IO ()
-main = replWith (MkData _ []) "Command:> "processInput
+main = replWith (MkData _ []) "Command:> " processInput
