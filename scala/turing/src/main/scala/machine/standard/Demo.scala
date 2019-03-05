@@ -1,22 +1,22 @@
 package machine.standard
 
-import eu.timepit.refined.auto._
+import machine.compile.Compiler.standardForm
+import machine.compile._
 import machine.encode.DescriptionNumberInstance._
 import machine.encode.StandardDescriptionInstance._
 import machine.encode.StandardFormInstance._
-import machine.standard.Table.Entry
+import machine.standard.AST._
 
 object Demo extends App {
-  val t1: Table = Table(
-    List(
-      Entry(q(1), S(0), R(S(1)), q(2)),
-      Entry(q(2), S(0), R(S(0)), q(3)),
-      Entry(q(3), S(0), R(S(2)), q(4)),
-      Entry(q(4), S(0), R(S(0)), q(1))
-    )
-  )
 
-  println(t1.toStandardForm)
-  println(t1.toStandardDescription)
-  println(t1.toDescriptionNumber)
+  val t1 = machine.regular.Demo.t1
+  val t2 = machine.regular.Demo.t2
+
+  println(t1.prettyPrint)
+  val t3 = standardForm(t1.mkDSL)._3.toStandardTable
+  List(t3.toStandardForm, t3.toStandardDescription, t3.toDescriptionNumber) foreach println
+
+  println(t1.prettyPrint)
+  val t4 = standardForm(t2.mkDSL)._3.toStandardTable
+  List(t4.toStandardForm, t4.toStandardDescription, t4.toDescriptionNumber) foreach println
 }

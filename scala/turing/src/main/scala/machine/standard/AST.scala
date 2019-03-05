@@ -26,7 +26,10 @@ object AST {
     }
   }
 
-  implicit class StandardFormOps(ast: Table) {
-    def toStandardForm: STable = STable(ast.toEntry)
+  implicit class StandardFormOps(ast: AST) {
+    def toStandardTable: STable = ast match {
+      case f: Final => STable(f.toEntry)
+      case t: Table => STable(t.toEntry)
+    }
   }
 }

@@ -15,10 +15,7 @@ package object compile {
   private val None: String = ""
   implicit val sc: SymbolContext = Map(None -> S(0), "0" -> S(1), "1" -> S(2))
 
-  def lookup[A](c: Context[A], k: String): Option[A] = {
-    println(s"looking for $k")
-    c.get(k)
-  }
+  def lookup[A](c: Context[A], k: String): Option[A] = c.get(k)
   def extend[A](c: Context[A], k: String, v: A): Context[A] = c.updated(k, v)
 
   /**
@@ -26,7 +23,7 @@ package object compile {
     * index starts at 1
     * so, q(1), q(2), q(3) and so on
     */
-  val freshMConfig: () => q = {
+  val freshMConfig: () => () => q = () => {
     var index = 0
     () => {
       index += 1
@@ -40,7 +37,7 @@ package object compile {
     * so, S(3), S(4), S(5) and so on
     * because, S(0) = None, S(1) = 0, S(2) = 1
     */
-  val freshSymbol: () => S = {
+  val freshSymbol: () => () => S = () => {
     var index = 2
     () => {
       index += 1
