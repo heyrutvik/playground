@@ -1,4 +1,4 @@
-package machine
+package machine.standard
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric.NonNegative

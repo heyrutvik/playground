@@ -1,4 +1,4 @@
-package machine
+package machine.standard
 
 import machine.encode.StandardDescription
 

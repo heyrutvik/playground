@@ -1,6 +1,6 @@
 package machine.encode
 
-import machine.Table
+import machine.standard.Table
 
 trait DescriptionNumber[T] {
   def encode(x: T): String

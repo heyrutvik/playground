@@ -1,7 +1,7 @@
 package machine.encode
 
-import machine.Table.Entry
-import machine._
+import machine.standard.Table.Entry
+import machine.standard._
 
 trait StandardForm[T] {
   def encode(x: T): String

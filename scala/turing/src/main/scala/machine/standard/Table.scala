@@ -1,7 +1,7 @@
-package machine
+package machine.standard
 
-import machine.Table.Entry
 import machine.encode.{DescriptionNumber, StandardDescription, StandardForm}
+import machine.standard.Table.Entry
 
 case class Table(es: List[Entry])
 
