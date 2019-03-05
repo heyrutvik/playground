@@ -1,20 +1,19 @@
 package machine.regular
 
 import DSL._
+import machine.compile._
+import machine.compile.Compiler._
+import machine.standard.AST._
+import machine.encode.StandardFormInstance._
 
 object Demo extends App {
 
   val t1 = Table {
-    {"x" read "" perform "P1, R" goto "y"} |:
-    {"y" read "" perform "P2, L" goto "x"} |:
-    {"x" read "" perform "P3, R" goto "y"} |:
-    {"y" read "" perform "P4, L" goto "x"} |:
-    {"x" read "" perform "P5, R" goto "y"} |:
-    {"y" read "" perform "P6" goto "x"} |:
-    {"x" read "" perform "P7, R" goto "y"} |:
-    {"y" read "" perform "P8, L" goto "x"} |:
-    {"x" read "" perform "P9, L" goto "z"}
+    {"b" read "" perform "P0, R" goto "c"} |:
+    {"c" read "" perform "R"     goto "e"} |:
+    {"e" read "" perform "P1, R" goto "f"} |:
+    {"f" read "" perform "R"     goto "b"}
   }
 
-  t1.es.foreach(println)
+  println(standardForm(mkDSL(t1.es))._3.asInstanceOf[machine.standard.AST.Table].toStandardForm.toStandardForm)
 }
