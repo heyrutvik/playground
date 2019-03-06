@@ -10,11 +10,19 @@ package object compile {
   type ConfigContext = Context[q]
   type SymbolContext = Context[S]
 
-  implicit val cc: ConfigContext = Map()
+  object Symbol {
+    val BLANK: String = machine.regular.DSL.blank
+    val ANY: String = machine.regular.DSL.any
+  }
 
-  val BLANK: String = machine.regular.DSL.blank
-  val ANY: String = machine.regular.DSL.any
-  implicit val sc: SymbolContext = Map(BLANK -> S(0), "0" -> S(1), "1" -> S(2), ANY -> S(3))
+  object Move {
+    val RIGHT = "R"
+    val LEFT = "L"
+    val NONE = "N"
+  }
+
+  implicit val cc: ConfigContext = Map()
+  implicit val sc: SymbolContext = Map(Symbol.BLANK -> S(0), "0" -> S(1), "1" -> S(2), Symbol.ANY -> S(3))
 
   def lookup[A](c: Context[A], k: String): Option[A] = c.get(k)
   def extend[A](c: Context[A], k: String, v: A): Context[A] = c.updated(k, v)

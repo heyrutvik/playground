@@ -2,6 +2,7 @@ package machine.encode
 
 import machine.standard.Table.Entry
 import machine.standard._
+import machine.compile.Move._
 
 trait StandardDescription[T] {
   def encode(x: T): String
@@ -18,15 +19,15 @@ object StandardDescriptionInstance {
   }
 
   implicit def rightOpStandardDescription(implicit s: StandardDescription[S]): StandardDescription[R] = {
-    (r: R) => s.encode(r.p) + "R"
+    (r: R) => s.encode(r.p) + RIGHT
   }
 
   implicit def leftOpStandardDescription(implicit s: StandardDescription[S]): StandardDescription[L] = {
-    (l: L) => s.encode(l.p) + "L"
+    (l: L) => s.encode(l.p) + LEFT
   }
 
   implicit def noneOpStandardDescription(implicit s: StandardDescription[S]): StandardDescription[N] = {
-    (n: N) => s.encode(n.p) + "N"
+    (n: N) => s.encode(n.p) + NONE
   }
 
   implicit def entryStandardDescription(

@@ -5,6 +5,7 @@ import machine.regular.DSL
 import machine.regular.DSL.{Table => DTable, _}
 import machine.standard.AST.{Table => STable, _}
 import machine.standard.{AST, _}
+import Move._
 
 case class Compiler() {
 
@@ -26,17 +27,17 @@ case class Compiler() {
       case Perform(c, op) => {
         val (ecc, esc, ast) = _standardForm(c)
         Elaborator.operation(c.sym, op).split(",").toList match {
-          case "E" :: (m @ ("R" | "L" | "N")) :: Nil =>
-            (ecc, esc, Op(ast, R(lookup(esc, BLANK).get)))
-          case p :: "R" :: Nil => lookup(esc, p.drop(1)).map(sym => (ecc, esc, Op(ast, R(sym)))).getOrElse {
+          case "E" :: (m @ (RIGHT | LEFT | NONE)) :: Nil =>
+            (ecc, esc, Op(ast, R(lookup(esc, Symbol.BLANK).get)))
+          case p :: RIGHT :: Nil => lookup(esc, p.drop(1)).map(sym => (ecc, esc, Op(ast, R(sym)))).getOrElse {
             val eesc = extend(esc, p.drop(1), freshsym())
             (ecc, eesc, Op(ast, R(lookup(eesc, p.drop(1)).get)))
           }
-          case p :: "L" :: Nil => lookup(esc, p.drop(1)).map(sym => (ecc, esc, Op(ast, L(sym)))).getOrElse {
+          case p :: LEFT :: Nil => lookup(esc, p.drop(1)).map(sym => (ecc, esc, Op(ast, L(sym)))).getOrElse {
             val eesc = extend(esc, p.drop(1), freshsym())
             (ecc, eesc, Op(ast, L(lookup(eesc, p.drop(1)).get)))
           }
-          case p :: "N" :: Nil => lookup(esc, p.drop(1)).map(sym => (ecc, esc, Op(ast, N(sym)))).getOrElse {
+          case p :: NONE :: Nil => lookup(esc, p.drop(1)).map(sym => (ecc, esc, Op(ast, N(sym)))).getOrElse {
             val eesc = extend(esc, p.drop(1), freshsym())
             (ecc, eesc, Op(ast, N(lookup(eesc, p.drop(1)).get)))
           }

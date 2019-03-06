@@ -2,28 +2,28 @@ package machine.elaborate
 
 import machine.regular.Table.Entry
 import machine.regular.DSL._
+import machine.compile.Move._
 
 object Elaborator {
 
   // scanned symbol ss and operation string
   def operation(ss: String, op: String): String = {
 
-    val (mr, ml, mn) = ("R", "L", "N")
     val printSame = s"P$ss"
 
     def isPrint(s: String): Boolean = s.startsWith("P") || s == "E"
-    def isMove(s: String): Boolean = List(mr, ml, mn).contains(s)
+    def isMove(s: String): Boolean = List(RIGHT, LEFT, NONE).contains(s)
 
     val split = op.split(",").map(_.trim).toList
 
     def go(split: List[String], acc: List[List[String]]): List[List[String]] = split match {
-      case p1 :: p2 :: rest if isPrint(p1) && isPrint(p2) => go(rest, List(p2, mn) :: acc)
+      case p1 :: p2 :: rest if isPrint(p1) && isPrint(p2) => go(rest, List(p2, NONE) :: acc)
       case p :: m :: rest if isPrint(p) && isMove(m) => go(rest, List(p, m) :: acc)
-      case m :: p :: rest if isMove(m) && isPrint(p) => go(rest, List(printSame, m, p, mn) :: acc)
+      case m :: p :: rest if isMove(m) && isPrint(p) => go(rest, List(printSame, m, p, NONE) :: acc)
       case m1 :: m2 :: rest if isMove(m1) && isMove(m2) => go(rest, List(printSame, m1, printSame, m2) :: acc)
-      case p :: Nil if isPrint(p) => List(p, mn) :: acc
+      case p :: Nil if isPrint(p) => List(p, NONE) :: acc
       case m :: Nil if isMove(m) => List(printSame, m) :: acc
-      case "" :: rest => go(rest, List(printSame, mn) :: acc)
+      case "" :: rest => go(rest, List(printSame, NONE) :: acc)
       case Nil => acc
     }
 

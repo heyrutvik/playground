@@ -2,6 +2,7 @@ package machine.encode
 
 import machine.standard.Table.Entry
 import machine.standard._
+import machine.compile.Move._
 
 trait StandardForm[T] {
   def encode(x: T): String
@@ -18,15 +19,15 @@ object StandardFormInstance {
   }
 
   implicit def rightOpsStandardForm(implicit s: StandardForm[S]): StandardForm[R] = {
-    (r: R) => s.encode(r.p) + "R"
+    (r: R) => s.encode(r.p) + RIGHT
   }
 
   implicit def leftOpsStandardForm(implicit s: StandardForm[S]): StandardForm[L] = {
-    (l: L) => s.encode(l.p) + "L"
+    (l: L) => s.encode(l.p) + LEFT
   }
 
   implicit def noneOpsStandardForm(implicit s: StandardForm[S]): StandardForm[N] = {
-    (n: N) => s.encode(n.p) + "N"
+    (n: N) => s.encode(n.p) + NONE
   }
 
   implicit def entryStandardForm(
