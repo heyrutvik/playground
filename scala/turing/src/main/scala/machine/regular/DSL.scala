@@ -9,8 +9,8 @@ import machine.regular.Table.Entry
 trait DSL
 
 object DSL extends DSL0 {
-  val any = "???"
-  val blank = ""
+  val blank = "BLANK"
+  val any = "ANY"
   case class Define(s: String) extends DSL
   case class Read(mc: Define, sym: String) extends DSL
   case class Perform(c: Read, op: String) extends DSL
@@ -39,7 +39,8 @@ object DSL extends DSL0 {
 
 // to resolve the conflict of `DSL.mkList` and `DSL0.singleEntry`
 trait DSL0 {
-  implicit def singleEntry(e: Goto): List[Entry] = e match {
-    case Goto(Perform(Read(Define(mc), sym), op), fc) => List(Entry(mc, sym, op, fc))
+  implicit def moreEntry(e: Goto): List[Entry] = List(singleEntry(e))
+  implicit def singleEntry(e: Goto): Entry = e match {
+    case Goto(Perform(Read(Define(mc), sym), op), fc) => Entry(mc, sym, op, fc)
   }
 }

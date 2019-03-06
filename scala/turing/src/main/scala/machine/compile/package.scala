@@ -12,9 +12,9 @@ package object compile {
 
   implicit val cc: ConfigContext = Map()
 
-  private val Blank: String = machine.regular.DSL.blank
-  private val Any: String = machine.regular.DSL.any
-  implicit val sc: SymbolContext = Map(Blank -> S(0), "0" -> S(1), "1" -> S(2), Any -> S(3))
+  val BLANK: String = machine.regular.DSL.blank
+  val ANY: String = machine.regular.DSL.any
+  implicit val sc: SymbolContext = Map(BLANK -> S(0), "0" -> S(1), "1" -> S(2), ANY -> S(3))
 
   def lookup[A](c: Context[A], k: String): Option[A] = c.get(k)
   def extend[A](c: Context[A], k: String, v: A): Context[A] = c.updated(k, v)
