@@ -2,6 +2,7 @@ package machine.regular
 
 import machine.regular.DSL.{Define, Goto, Perform, Read}
 import machine.regular.Table.Entry
+import machine.compile.Symbol._
 
 // this serves two purposes
 // DSL to write machine table
@@ -9,8 +10,8 @@ import machine.regular.Table.Entry
 trait DSL
 
 object DSL extends DSL0 {
-  val blank = "BLANK"
-  val any = "ANY"
+  val blank = BLANK
+  val any = ANY
   case class Define(s: String) extends DSL
   case class Read(mc: Define, sym: String) extends DSL
   case class Perform(c: Read, op: String) extends DSL
