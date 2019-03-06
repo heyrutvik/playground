@@ -12,8 +12,9 @@ package object compile {
 
   implicit val cc: ConfigContext = Map()
 
-  private val None: String = ""
-  implicit val sc: SymbolContext = Map(None -> S(0), "0" -> S(1), "1" -> S(2))
+  private val Blank: String = machine.regular.DSL.blank
+  private val Any: String = machine.regular.DSL.any
+  implicit val sc: SymbolContext = Map(Blank -> S(0), "0" -> S(1), "1" -> S(2), Any -> S(3))
 
   def lookup[A](c: Context[A], k: String): Option[A] = c.get(k)
   def extend[A](c: Context[A], k: String, v: A): Context[A] = c.updated(k, v)
@@ -33,12 +34,12 @@ package object compile {
 
   /**
     * creates fresh symbol
-    * index starts at 3
-    * so, S(3), S(4), S(5) and so on
-    * because, S(0) = None, S(1) = 0, S(2) = 1
+    * index starts at 4
+    * so, S(4), S(5), S(6) and so on
+    * because, S(0) = None, S(1) = 0, S(2) = 1, S(3) = Any
     */
   val freshSymbol: () => () => S = () => {
-    var index = 2
+    var index = 3
     () => {
       index += 1
       S(Refined.unsafeApply(index))

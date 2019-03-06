@@ -9,6 +9,8 @@ import machine.regular.Table.Entry
 trait DSL
 
 object DSL extends DSL0 {
+  val any = "???"
+  val blank = ""
   case class Define(s: String) extends DSL
   case class Read(mc: Define, sym: String) extends DSL
   case class Perform(c: Read, op: String) extends DSL

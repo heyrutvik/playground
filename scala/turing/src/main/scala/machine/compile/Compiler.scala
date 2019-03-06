@@ -2,26 +2,37 @@ package machine.compile
 
 import machine.regular.DSL
 import machine.regular.DSL.{Table => DTable, _}
-import machine.standard.AST
 import machine.standard.AST.{Table => STable, _}
-import machine.standard._
+import machine.standard.{AST, _}
 
-object Compiler extends App {
-  def standardForm(t: DSL)(implicit cc: ConfigContext, sc: SymbolContext): (ConfigContext, SymbolContext, AST) = {
+case class Compiler() {
 
-    def formatOp(ss: String, op: String): String = {
-      op.split(",").map(_.trim).toList match {
-        case ls @ p :: "R" :: Nil if p.startsWith("P") => ls.mkString(",")
-        case ls @ p :: "L" :: Nil if p.startsWith("P") => ls.mkString(",")
-        case ls @ ("R" :: Nil | "L" :: Nil) => s"""P$ss,${ls.mkString(",")}"""
-        case p :: Nil if p.startsWith("P") => s"$p,N"
-      }
+  // scanned symbol ss and operation string
+  private def elaborate(ss: String, op: String): String = {
+
+    val (mr, ml, mn) = ("R", "L", "N")
+    val printSame = s"P$ss"
+
+    def isPrint(s: String): Boolean = s.startsWith("P") || s == "E"
+    def isMove(s: String): Boolean = List(mr, ml, mn).contains(s)
+
+    val split = op.split(",").map(_.trim).toList
+
+    def go(split: List[String], acc: List[List[String]]): List[List[String]] = split match {
+      case p1 :: p2 :: rest if isPrint(p1) && isPrint(p2) => go(rest, List(p2, mn) :: acc)
+      case p :: m :: rest if isPrint(p) && isMove(m) => go(rest, List(p, m) :: acc)
+      case m :: p :: rest if isMove(m) && isPrint(p) => go(rest, List(printSame, m, p, mn) :: acc)
+      case m1 :: m2 :: rest if isMove(m1) && isMove(m2) => go(rest, List(printSame, m1, printSame, m2) :: acc)
+      case p :: Nil if isPrint(p) => List(p, mn) :: acc
+      case m :: Nil if isMove(m) => List(printSame, m) :: acc
+      case "" :: rest => go(rest, List(printSame, mn) :: acc)
+      case Nil => acc
     }
 
-    val freshmc: () => q = freshMConfig()
+    go(split, Nil).reverse.flatten.mkString(",")
+  }
 
-    val freshsym: () => S = freshSymbol()
-
+  private def _standardForm(t: DSL)(implicit freshmc: () => q, freshsym: () => S, cc: ConfigContext, sc: SymbolContext): (ConfigContext, SymbolContext, AST) = {
     t match {
       case Define(s) => {
         lookup(cc, s).map(c => (cc, sc, MConfig(c))).getOrElse {
@@ -30,15 +41,17 @@ object Compiler extends App {
         }
       }
       case Read(mc, s) => {
-        val (ecc, esc, ast) = standardForm(mc)
+        val (ecc, esc, ast) = _standardForm(mc)
         lookup(esc, s).map(sym => (ecc, esc, Scan(ast, sym))).getOrElse {
           val eesc = extend(esc, s, freshsym())
           (ecc, eesc, Scan(ast, lookup(eesc, s).get))
         }
       }
       case Perform(c, op) => {
-        val (ecc, esc, ast) = standardForm(c)
-        formatOp(c.sym, op).split(",").toList match {
+        val (ecc, esc, ast) = _standardForm(c)
+        elaborate(c.sym, op).split(",").toList match {
+          case "E" :: (m @ ("R" | "L" | "N")) :: Nil =>
+            (ecc, esc, Op(ast, R(lookup(esc, "").get)))
           case p :: "R" :: Nil => lookup(esc, p.drop(1)).map(sym => (ecc, esc, Op(ast, R(sym)))).getOrElse {
             val eesc = extend(esc, p.drop(1), freshsym())
             (ecc, eesc, Op(ast, R(lookup(eesc, p.drop(1)).get)))
@@ -54,17 +67,28 @@ object Compiler extends App {
         }
       }
       case Goto(p, fc) => {
-        val (ecc, esc, ast) = standardForm(p)
+        val (ecc, esc, ast) = _standardForm(p)
         lookup(ecc, fc).map(c => (ecc, esc, Final(ast, c))).getOrElse {
           val eecc = extend(ecc, fc, freshmc())
           (eecc, esc, Final(ast, lookup(eecc, fc).get))
         }
       }
       case DTable(goto, dsl) => {
-        val (ecc, esc, ast1) = standardForm(goto)
-        val (eecc, eesc, ast2) = standardForm(dsl)(ecc, esc)
+        val (ecc, esc, ast1) = _standardForm(goto)
+        val (eecc, eesc, ast2) = _standardForm(dsl)(freshmc, freshsym, ecc, esc)
         (eecc, eesc, STable(ast1, ast2))
       }
     }
+  }
+
+  def standardForm(t: DSL, debug: Boolean = false): AST = {
+    implicit val freshmc = freshMConfig()
+    implicit val freshsym = freshSymbol()
+    val (x, y, ast) = _standardForm(t)
+    if (debug) {
+      List("Config Context", "---------------", x.mkString("\n")).foreach(println)
+      List("Symbol Context", "---------------", y.mkString("\n")).foreach(println)
+    }
+    ast
   }
 }
