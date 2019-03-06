@@ -9,7 +9,7 @@ import Move._
 
 case class Compiler() {
 
-  private def _standardForm(t: DSL)(implicit freshmc: () => q, freshsym: () => S, cc: ConfigContext, sc: SymbolContext): (ConfigContext, SymbolContext, AST) = {
+  private def _standardForm(t: DSL)(implicit freshmc: () => Q, freshsym: () => S, cc: ConfigContext, sc: SymbolContext): (ConfigContext, SymbolContext, AST) = {
     t match {
       case Define(s) => {
         lookup(cc, s).map(c => (cc, sc, MConfig(c))).getOrElse {
@@ -63,8 +63,8 @@ case class Compiler() {
     implicit val freshsym = freshSymbol()
     val (x, y, ast) = _standardForm(t)
     if (debug) {
-      List("Config Context", "---------------", x.mkString("\n")).foreach(println)
-      List("Symbol Context", "---------------", y.mkString("\n")).foreach(println)
+      List("\n", "Config Context", "---------------", x.mkString("\n"), "---------------").foreach(println)
+      List("\n", "Symbol Context", "---------------", y.mkString("\n"), "---------------").foreach(println)
     }
     ast
   }

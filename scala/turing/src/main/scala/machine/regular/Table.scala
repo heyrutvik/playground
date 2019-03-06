@@ -28,7 +28,7 @@ case class Table(es: List[Entry]) {
     padding.format("m-config", "symbol", "operations", "final m-config") + "\n" +
     padding.format("--------", "------", "----------", "--------------") + "\n" +
     es.map { e =>
-      padding.format(e.m_config, if (e.symbol == "") "None" else e.symbol, e.operation, e.final_m_config)
+      padding.format(e.name, if (e.symbol == "") "None" else e.symbol, e.operation, e.next)
     }.mkString("\n") + "\n" +
     padding.format("--------", "------", "----------", "--------------") + "\n" + "\n"
   }
@@ -39,5 +39,5 @@ case class Table(es: List[Entry]) {
 
 object Table {
 
-  case class Entry(m_config: String, symbol: String, operation: String, final_m_config: String)
+  case class Entry(name: String, symbol: String, operation: String, next: String)
 }

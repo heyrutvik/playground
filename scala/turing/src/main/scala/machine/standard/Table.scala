@@ -12,7 +12,7 @@ object Table {
     def toDescriptionNumber(implicit ev: DescriptionNumber[Table]): String = ev.encode(t)
   }
 
-  case class Entry(m_config: q, symbol: S, operation: Operation, final_m_config: q)
+  case class Entry(name: Q, symbol: S, operation: Operation, next: Q)
 
   object Entry {
     def sd(e: Entry)(implicit ev: StandardDescription[Entry]): String = ev.encode(e)

@@ -2,12 +2,12 @@ package machine
 
 import eu.timepit.refined.auto._
 import eu.timepit.refined.api.Refined
-import machine.standard.{S, q}
+import machine.standard.{S, Q}
 
 package object compile {
 
   type Context[A] = Map[String, A]
-  type ConfigContext = Context[q]
+  type ConfigContext = Context[Q]
   type SymbolContext = Context[S]
 
   object Symbol {
@@ -32,11 +32,11 @@ package object compile {
     * index starts at 1
     * so, q(1), q(2), q(3) and so on
     */
-  def freshMConfig(): () => q = {
+  def freshMConfig(): () => Q = {
     var index = 0
     () => {
       index += 1
-      q(Refined.unsafeApply(index))
+      Q(Refined.unsafeApply(index))
     }
   }
 

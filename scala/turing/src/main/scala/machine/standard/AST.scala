@@ -7,10 +7,10 @@ import machine.standard.{Table => STable}
 trait AST
 
 object AST {
-  case class MConfig(i: q) extends AST
+  case class MConfig(i: Q) extends AST
   case class Scan(mc: AST, i: S) extends AST // mc: MConfig
   case class Op(c: AST, op: Operation) extends AST // c: Scan
-  case class Final(op: AST, fc: q) extends AST { // op: Op
+  case class Final(op: AST, fc: Q) extends AST { // op: Op
     def toEntry: List[Entry] = this match {
       case Final(Op(Scan(MConfig(q), s), op), f) => List(Entry(q, s, op, f))
     }

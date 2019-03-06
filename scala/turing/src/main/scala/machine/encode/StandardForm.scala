@@ -10,8 +10,8 @@ trait StandardForm[T] {
 
 object StandardFormInstance {
 
-  implicit val m_configStandardForm: StandardForm[q] = {
-    (q: q) => "q" + q.n.toString
+  implicit val m_configStandardForm: StandardForm[Q] = {
+    (q: Q) => "q" + q.n.toString
   }
 
   implicit val symbolStandardForm: StandardForm[S] = {
@@ -31,14 +31,14 @@ object StandardFormInstance {
   }
 
   implicit def entryStandardForm(
-    implicit q: StandardForm[q],
-    s: StandardForm[S],
-    r: StandardForm[R],
-    l: StandardForm[L],
-    n: StandardForm[N]): StandardForm[Entry] = {
-      case op @ Entry(_, _, _: R, _) => q.encode(op.m_config) + s.encode(op.symbol) + r.encode(op.operation.asInstanceOf[R]) + q.encode(op.final_m_config) + ";"
-      case op @ Entry(_, _, _: L, _) => q.encode(op.m_config) + s.encode(op.symbol) + l.encode(op.operation.asInstanceOf[L]) + q.encode(op.final_m_config) + ";"
-      case op @ Entry(_, _, _: N, _) => q.encode(op.m_config) + s.encode(op.symbol) + n.encode(op.operation.asInstanceOf[N]) + q.encode(op.final_m_config) + ";"
+                                  implicit q: StandardForm[Q],
+                                  s: StandardForm[S],
+                                  r: StandardForm[R],
+                                  l: StandardForm[L],
+                                  n: StandardForm[N]): StandardForm[Entry] = {
+      case op @ Entry(_, _, _: R, _) => q.encode(op.name) + s.encode(op.symbol) + r.encode(op.operation.asInstanceOf[R]) + q.encode(op.next) + ";"
+      case op @ Entry(_, _, _: L, _) => q.encode(op.name) + s.encode(op.symbol) + l.encode(op.operation.asInstanceOf[L]) + q.encode(op.next) + ";"
+      case op @ Entry(_, _, _: N, _) => q.encode(op.name) + s.encode(op.symbol) + n.encode(op.operation.asInstanceOf[N]) + q.encode(op.next) + ";"
   }
 
   implicit def tableStandardForm(implicit e: StandardForm[Entry]): StandardForm[Table] = {

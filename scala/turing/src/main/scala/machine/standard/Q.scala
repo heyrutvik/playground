@@ -9,8 +9,8 @@ import machine.encode.StandardDescription
   *
   * @param n index
   */
-case class q(n: Int Refined Positive)
+case class Q(n: Int Refined Positive)
 
-object q {
-  def sd(mc: q)(implicit ev: StandardDescription[q]): String = ev.encode(mc)
+object Q {
+  def sd(mc: Q)(implicit ev: StandardDescription[Q]): String = ev.encode(mc)
 }

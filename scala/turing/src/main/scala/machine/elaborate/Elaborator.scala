@@ -34,11 +34,11 @@ object Elaborator {
   def entry(e: Entry): List[Entry] = {
     val grouped = operation(e.symbol, e.operation).split(',').grouped(2).toList.map(_.mkString(","))
     def go(ops: List[String], names: List[String], acc: List[Entry]): List[Entry] = {
-      val fn = freshen(names, e.m_config)
+      val fn = freshen(names, e.name)
       def create(op: String, last: Boolean = false) = {
-        if (acc.isEmpty && last) Entry(e.m_config, e.symbol, op, e.final_m_config)
-        else if (acc.isEmpty) Entry(e.m_config, e.symbol, op, fn)
-        else Entry(names.head, any, op, if (last) e.final_m_config else fn)
+        if (acc.isEmpty && last) Entry(e.name, e.symbol, op, e.next)
+        else if (acc.isEmpty) Entry(e.name, e.symbol, op, fn)
+        else Entry(names.head, any, op, if (last) e.next else fn)
       }
       ops match {
         case Nil => acc
@@ -46,6 +46,6 @@ object Elaborator {
         case op :: rest => go(rest, fn :: names, create(op) :: acc)
       }
     }
-    go(grouped, List(e.m_config), Nil).reverse
+    go(grouped, List(e.name), Nil).reverse
   }
 }

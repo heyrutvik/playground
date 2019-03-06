@@ -10,8 +10,8 @@ trait StandardDescription[T] {
 
 object StandardDescriptionInstance {
 
-  implicit val mconfigStandardDescription: StandardDescription[q] = {
-    (mc: q) => "D" + (1 to mc.n.value).map(_ => "A").mkString
+  implicit val mconfigStandardDescription: StandardDescription[Q] = {
+    (mc: Q) => "D" + (1 to mc.n.value).map(_ => "A").mkString
   }
 
   implicit val symbolStandardDescription: StandardDescription[S] = {
@@ -31,14 +31,14 @@ object StandardDescriptionInstance {
   }
 
   implicit def entryStandardDescription(
-    implicit q: StandardDescription[q],
-    s: StandardDescription[S],
-    r: StandardDescription[R],
-    l: StandardDescription[L],
-    n: StandardDescription[N]): StandardDescription[Entry] = {
-      case op @ Entry(_, _, _: R, _) => q.encode(op.m_config) + s.encode(op.symbol) + r.encode(op.operation.asInstanceOf[R]) + q.encode(op.final_m_config) + ";"
-      case op @ Entry(_, _, _: L, _) => q.encode(op.m_config) + s.encode(op.symbol) + l.encode(op.operation.asInstanceOf[L]) + q.encode(op.final_m_config) + ";"
-      case op @ Entry(_, _, _: N, _) => q.encode(op.m_config) + s.encode(op.symbol) + n.encode(op.operation.asInstanceOf[N]) + q.encode(op.final_m_config) + ";"
+                                         implicit q: StandardDescription[Q],
+                                         s: StandardDescription[S],
+                                         r: StandardDescription[R],
+                                         l: StandardDescription[L],
+                                         n: StandardDescription[N]): StandardDescription[Entry] = {
+      case op @ Entry(_, _, _: R, _) => q.encode(op.name) + s.encode(op.symbol) + r.encode(op.operation.asInstanceOf[R]) + q.encode(op.next) + ";"
+      case op @ Entry(_, _, _: L, _) => q.encode(op.name) + s.encode(op.symbol) + l.encode(op.operation.asInstanceOf[L]) + q.encode(op.next) + ";"
+      case op @ Entry(_, _, _: N, _) => q.encode(op.name) + s.encode(op.symbol) + n.encode(op.operation.asInstanceOf[N]) + q.encode(op.next) + ";"
   }
 
   implicit def tableStandardDescription(implicit e: StandardDescription[Entry]): StandardDescription[Table] = {
