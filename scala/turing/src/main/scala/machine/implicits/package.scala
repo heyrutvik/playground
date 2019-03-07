@@ -1,4 +1,4 @@
-package machine.implicits
+package machine
 
 import eu.timepit.refined.auto._
 import machine.compile.{Compiler, ConfigContext, Symbol, SymbolContext}
@@ -10,7 +10,7 @@ import machine.regular.{Table => RTable}
 import machine.standard.AST.{Final, Table => ASTTable}
 import machine.standard.{AST, S, Table => STable}
 
-object Instance {
+package object implicits {
 
   implicit val cc: ConfigContext = Map()
   // TODO drop drop :p

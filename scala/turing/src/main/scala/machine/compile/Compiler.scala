@@ -2,7 +2,7 @@ package machine.compile
 
 import machine.compile.Move._
 import machine.elaborate.Elaborator
-import machine.implicits.Instance._
+import machine.implicits._
 import machine.regular.DSL
 import machine.regular.DSL.{Table => DTable, _}
 import machine.standard.AST.{Table => STable, _}

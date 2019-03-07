@@ -1,6 +1,6 @@
 package machine
 
-import machine.implicits.Instance._
+import machine.implicits._
 import machine.regular.DSL._
 
 object Demo extends App {
