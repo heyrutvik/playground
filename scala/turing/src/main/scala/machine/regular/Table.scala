@@ -4,7 +4,7 @@ import machine.elaborate.Elaborator
 import machine.regular.DSL.{Define, Goto, Perform, Read, Table => DSLTable}
 import machine.regular.Table.Entry
 
-case class Table(es: List[Entry]) {
+case class Table(name: String, es: List[Entry]) {
 
   implicit val symbols: Set[String] = es.map(_.symbol).filterNot(_ == machine.compile.Symbol.ANY).toSet
   val elaborated: List[Entry] = Elaborator.entries(es)
@@ -25,13 +25,16 @@ case class Table(es: List[Entry]) {
     val maxop = es.map(e => e.operation.length).max
     val op_padding = "operations".length.max(maxop)
     val padding = "%1$8s | %2$6s | %3$"+op_padding+"s | %4$14s"
-    "\n" + padding.format("--------", "------", "----------", "--------------") + "\n" +
+
+    "\n" +
+    name + "\n" +
+    padding.format("--------", "------", "----------", "--------------") + "\n" +
     padding.format("m-config", "symbol", "operations", "final m-config") + "\n" +
     padding.format("--------", "------", "----------", "--------------") + "\n" +
     es.map { e =>
       padding.format(e.name, if (e.symbol == "") "None" else e.symbol, e.operation, e.next)
     }.mkString("\n") + "\n" +
-    padding.format("--------", "------", "----------", "--------------") + "\n" + "\n"
+    padding.format("--------", "------", "----------", "--------------") + "\n"
   }
 
   def prettyPrint: String = _prettyPrint(es)

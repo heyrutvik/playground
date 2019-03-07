@@ -1,27 +1,18 @@
 package machine.interpret
 
 import eu.timepit.refined.auto._
-import machine.compile.{Compiler, Symbol}
-import machine.regular.{Table => RTable}
 import machine.standard.Table.Entry
-import machine.standard._
+import machine.standard.{Table => STable, _}
 
 import scala.collection.mutable.ArrayBuffer
 
-case class Interpreter(rt: RTable) {
+object Interpreter {
 
-  private case class Config(mc: Q, s: S)
-  private case class Behaviour(o: Operation, fc: Q)
-  private case class CompleteConfig(state: Q, head: Int, tape: ArrayBuffer[S])
+  case class Config(mc: Q, s: S)
+  case class Behaviour(o: Operation, fc: Q)
+  case class CompleteConfig(state: Q, head: Int, tape: ArrayBuffer[S])
 
-  private val (_, sc, ast) = Compiler(rt.mkDSL)
-  private val cs = sc.map(_.swap)
-  private val ct = ast.toStandardTable
-  private val context: Map[Config, Behaviour] = ct.es.map {
-    case Entry(name, symbol, operation, next) => Config(name, symbol) -> Behaviour(operation, next)
-  }.toMap
-
-  private def update(cc: CompleteConfig): CompleteConfig = {
+  def update(cc: CompleteConfig)(implicit context: Map[Config, Behaviour]): CompleteConfig = {
     import cc._
     val Behaviour(op, fc) = context(Config(state, tape(head)))
     val (h, t) = op match {
@@ -32,22 +23,20 @@ case class Interpreter(rt: RTable) {
     CompleteConfig(fc, h, t)
   }
 
-  def run(tapeSize: Int, debug: Boolean = false): String = {
+  def run(step: Int, debug: Boolean = false)(implicit ct: STable, print: CompleteConfig => Unit = _ => ()): ArrayBuffer[S] = {
+    implicit val context: Map[Config, Behaviour] = ct.es.map {
+      case Entry(name, symbol, operation, next) => Config(name, symbol) -> Behaviour(operation, next)
+    }.toMap
     if (debug) {
-      List("\n", "Configuration Context", "---------------", context.mkString("\n"), "---------------").foreach(println)
+      List(
+        "\n",
+        "Configuration Context",
+        "---------------",
+        context.mkString("\n"),
+        "---------------").foreach(println)
     }
     var cc = CompleteConfig(ct.es.head.name, 0, ArrayBuffer(S(0)))
-    (1 until tapeSize).foreach(_ => cc = update(cc))
-    cc.tape.map(c => cs(c)).map {
-      case Symbol.BLANK => "_"
-      case s => s
-    }.toList.mkString("|", "|", "|")
-  }
-}
-
-object Interpreter {
-  implicit class RTableOps(rt: RTable) {
-    def run(step: Int): String = Interpreter(rt).run(step)
-    def runWithDebug(step: Int): String = Interpreter(rt).run(step, true)
+    (1 until step).foreach { _ => print(cc); cc = update(cc)}
+    cc.tape
   }
 }

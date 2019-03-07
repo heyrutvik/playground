@@ -1,8 +1,7 @@
 package machine
 
-import eu.timepit.refined.auto._
 import eu.timepit.refined.api.Refined
-import machine.standard.{S, Q}
+import machine.standard.{Q, S}
 
 package object compile {
 
@@ -21,10 +20,6 @@ package object compile {
     val LEFT = "L"
     val NONE = "N"
   }
-
-  implicit val cc: ConfigContext = Map()
-  implicit val sc: SymbolContext =
-    Map(Symbol.BLANK -> S(0), "0" -> S(1), "1" -> S(2), Symbol.ANY -> S(3), Symbol.DYNAMIC.drop(1) -> S(4))
 
   def lookup[A](c: Context[A], k: String): Option[A] = c.get(k)
   def extend[A](c: Context[A], k: String, v: A): Context[A] = c.updated(k, v)

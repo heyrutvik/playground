@@ -1,8 +1,8 @@
 package machine.regular
 
+import machine.compile.Symbol._
 import machine.regular.DSL.{Define, Goto, Perform, Read}
 import machine.regular.Table.Entry
-import machine.compile.Symbol._
 
 // this serves two purposes
 // DSL to write machine table

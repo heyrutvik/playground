@@ -1,7 +1,6 @@
 package machine.standard
 
 import machine.standard.Table.Entry
-import machine.standard.{Table => STable}
 
 // AST for standard machine table
 trait AST
@@ -23,13 +22,6 @@ object AST {
           case t: Table => t.toEntry
         }
       }
-    }
-  }
-
-  implicit class StandardFormOps(ast: AST) {
-    def toStandardTable: STable = ast match {
-      case f: Final => STable(f.toEntry)
-      case t: Table => STable(t.toEntry)
     }
   }
 }
