@@ -1,9 +1,7 @@
 package machine
 
 import machine.compile.Compiler
-import machine.encode.DescriptionNumberInstance._
-import machine.encode.StandardDescriptionInstance._
-import machine.encode.StandardFormInstance._
+import machine.interpret.Interpreter._
 import machine.regular.DSL._
 import machine.regular.{Table => RTable}
 import machine.standard.AST._
@@ -18,17 +16,13 @@ object Demo extends App {
   }
 
   val t2 = RTable {
-    {"b" read blank perform "P0, R" goto "b"}
+    {"a" read blank perform "P0, R" goto "b"} |:
+    {"b" read blank perform "P1, L" goto "c"} |:
+    {"c" read "0" perform "P0, R" goto "d"} |:
+    {"d" read "1" perform "P1, L" goto "c"}
   }
 
   val t3 = RTable {
-    {"o" read "0"   perform ""      goto "q"} |:
-    {"q" read blank perform "P1, L" goto "p"} |:
-    {"p" read "x"   perform "E, R"  goto "q"} |:
-    {"p" read "e"   perform "R"     goto "f"}
-  }
-
-  val t4 = RTable {
     {"b" read blank perform "Pe, R, Pe, R, P0, R, R, P0, L, L" goto "o"} |:
     {"o" read "1"   perform "R, Px, L, L, L"                   goto "o"} |:
     {"o" read "0"   perform ""                                 goto "q"} |:
@@ -42,17 +36,15 @@ object Demo extends App {
     {"f" read blank perform "P0, L, L"                         goto "o"}
   }
 
-  val compiler = Compiler()
+  val a1 = Compiler.toAST(t1.mkDSL).toStandardTable
+  println(t1.prettyPrint)
+  println(t1.run(100))
 
-  val a1 = compiler.standardForm(t1.mkDSL, true).toStandardTable
-  List(t1.prettyPrintElaborated, a1.toStandardForm, a1.toStandardDescription, a1.toDescriptionNumber) foreach println
+  val a2 = Compiler.toAST(t2.mkDSL).toStandardTable
+  println(t2.prettyPrint)
+  println(t2.run(100))
 
-  val a2 = compiler.standardForm(t2.mkDSL).toStandardTable
-  List(a2.toStandardForm, a2.toStandardDescription, a2.toDescriptionNumber) foreach println
-
-  val a3 = compiler.standardForm(t3.mkDSL).toStandardTable
-  List(a3.toStandardForm, a3.toStandardDescription, a3.toDescriptionNumber) foreach println
-
-  val a4 = compiler.standardForm(t4.mkDSL).toStandardTable
-  List(a4.toStandardForm, a4.toStandardDescription, a4.toDescriptionNumber) foreach println
+  val a3 = Compiler.toAST(t3.mkDSL).toStandardTable
+  println(t3.prettyPrint)
+  println(t3.run(10000))
 }

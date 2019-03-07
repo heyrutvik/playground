@@ -13,6 +13,7 @@ package object compile {
   object Symbol {
     val BLANK: String = "BLANK"
     val ANY: String = "ANY"
+    val DYNAMIC: String = "PDYNAMIC"
   }
 
   object Move {
@@ -22,7 +23,8 @@ package object compile {
   }
 
   implicit val cc: ConfigContext = Map()
-  implicit val sc: SymbolContext = Map(Symbol.BLANK -> S(0), "0" -> S(1), "1" -> S(2), Symbol.ANY -> S(3))
+  implicit val sc: SymbolContext =
+    Map(Symbol.BLANK -> S(0), "0" -> S(1), "1" -> S(2), Symbol.ANY -> S(3), Symbol.DYNAMIC.drop(1) -> S(4))
 
   def lookup[A](c: Context[A], k: String): Option[A] = c.get(k)
   def extend[A](c: Context[A], k: String, v: A): Context[A] = c.updated(k, v)
@@ -42,12 +44,12 @@ package object compile {
 
   /**
     * creates fresh symbol
-    * index starts at 4
-    * so, S(4), S(5), S(6) and so on
-    * because, S(0) = None, S(1) = 0, S(2) = 1, S(3) = Any
+    * index starts at 5
+    * so, S(5), S(6), S(7) and so on
+    * because, S(0) = None, S(1) = 0, S(2) = 1, S(3) = Any, S(4) = Dynamic
     */
   def freshSymbol(): () => S = {
-    var index = 3
+    var index = 4
     () => {
       index += 1
       S(Refined.unsafeApply(index))

@@ -6,7 +6,8 @@ import machine.regular.Table.Entry
 
 case class Table(es: List[Entry]) {
 
-  val elaborated: List[Entry] = es.flatMap(Elaborator.entry)
+  implicit val symbols: Set[String] = es.map(_.symbol).filterNot(_ == machine.compile.Symbol.ANY).toSet
+  val elaborated: List[Entry] = Elaborator.entries(es)
 
   /**
     * TODO

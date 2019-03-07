@@ -7,7 +7,7 @@ import machine.standard.AST.{Table => STable, _}
 import machine.standard.{AST, _}
 import Move._
 
-case class Compiler() {
+object Compiler {
 
   private def _standardForm(t: DSL)(implicit freshmc: () => Q, freshsym: () => S, cc: ConfigContext, sc: SymbolContext): (ConfigContext, SymbolContext, AST) = {
     t match {
@@ -58,14 +58,21 @@ case class Compiler() {
     }
   }
 
-  def standardForm(t: DSL, debug: Boolean = false): AST = {
+  def apply(t: DSL): (ConfigContext, SymbolContext, AST) = {
     implicit val freshmc = freshMConfig()
     implicit val freshsym = freshSymbol()
-    val (x, y, ast) = _standardForm(t)
+    val (c, s, ast) = _standardForm(t)
+    (c, s, ast)
+  }
+
+  def toAST(t: DSL, debug: Boolean = false): AST = {
+    val (c, s, ast) = apply(t)
     if (debug) {
-      List("\n", "Config Context", "---------------", x.mkString("\n"), "---------------").foreach(println)
-      List("\n", "Symbol Context", "---------------", y.mkString("\n"), "---------------").foreach(println)
+      List("\n", "Config Context", "---------------", c.mkString("\n"), "---------------").foreach(println)
+      List("\n", "Symbol Context", "---------------", s.mkString("\n"), "---------------").foreach(println)
     }
     ast
   }
+
+  def toASTWithDebug(t: DSL): AST = toAST(t, true)
 }
