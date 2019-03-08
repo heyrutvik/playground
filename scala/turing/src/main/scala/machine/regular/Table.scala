@@ -1,12 +1,13 @@
 package machine.regular
 
+import machine.compile.Keyword
 import machine.elaborate.Elaborator
 import machine.regular.DSL.{Define, Goto, Perform, Read, Table => DSLTable}
 import machine.regular.Table.Entry
 
 case class Table(name: String, es: List[Entry]) {
 
-  implicit val symbols: Set[String] = es.map(_.symbol).filterNot(_ == machine.compile.Symbol.ANY).toSet
+  implicit val symbols: Set[String] = es.map(_.symbol).filterNot(_ == Keyword.ANY).toSet
   val elaborated: List[Entry] = Elaborator.entries(es)
 
   /**
@@ -21,7 +22,7 @@ case class Table(name: String, es: List[Entry]) {
     temp.tail.foldLeft(temp.head: DSL)((dsl, goto) => DSLTable(goto, dsl))
   }
 
-  private def _prettyPrint(es: List[Entry]): String = {
+  private def _pretty(es: List[Entry]): String = {
     val maxop = es.map(e => e.operation.length).max
     val op_padding = "operations".length.max(maxop)
     val padding = "%1$8s | %2$6s | %3$"+op_padding+"s | %4$14s"
@@ -37,8 +38,8 @@ case class Table(name: String, es: List[Entry]) {
     padding.format("--------", "------", "----------", "--------------") + "\n"
   }
 
-  def prettyPrint: String = _prettyPrint(es)
-  def prettyPrintElaborated: String = _prettyPrint(elaborated)
+  def pretty: String = _pretty(es)
+  def prettyElaborated: String = _pretty(elaborated)
 }
 
 object Table {

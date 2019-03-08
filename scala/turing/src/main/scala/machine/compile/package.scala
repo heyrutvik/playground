@@ -1,17 +1,20 @@
 package machine
 
 import eu.timepit.refined.api.Refined
-import machine.standard.{Q, S}
+import machine.standard.{C, S}
 
 package object compile {
 
   type Context[A] = Map[String, A]
-  type ConfigContext = Context[Q]
+  type ConfigContext = Context[C]
   type SymbolContext = Context[S]
 
-  object Symbol {
+  object Keyword {
     val BLANK: String = "BLANK"
     val ANY: String = "ANY"
+  }
+
+  object Symbol {
     val DYNAMIC: String = "PDYNAMIC"
   }
 
@@ -29,11 +32,11 @@ package object compile {
     * index starts at 1
     * so, q(1), q(2), q(3) and so on
     */
-  def freshMConfig(): () => Q = {
+  def freshMConfig(): () => C = {
     var index = 0
     () => {
       index += 1
-      Q(Refined.unsafeApply(index))
+      C(Refined.unsafeApply(index))
     }
   }
 

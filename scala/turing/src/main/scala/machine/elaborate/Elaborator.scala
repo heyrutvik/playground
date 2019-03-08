@@ -1,5 +1,6 @@
 package machine.elaborate
 
+import machine.compile.Keyword
 import machine.compile.Move._
 import machine.compile.Symbol._
 import machine.regular.Table.Entry
@@ -9,7 +10,7 @@ object Elaborator {
   // scanned symbol ss and operation string
   def operation(ss: String, op: String): String = {
 
-    def isPrint(s: String): Boolean = s.startsWith("P") || s == "E" || s == DYNAMIC
+    def isPrint(s: String): Boolean = s.startsWith("P") || s == "E"
     def isMove(s: String): Boolean = List(RIGHT, LEFT, NONE).contains(s)
 
     val split = op.split(",").map(_.trim).toList
@@ -40,9 +41,9 @@ object Elaborator {
         val e1 = {
           if (acc.isEmpty && last) Entry(e.name, e.symbol, op, e.next)
           else if (acc.isEmpty) Entry(e.name, e.symbol, op, fn)
-          else Entry(names.head, ANY, op, if (last) e.next else fn)
+          else Entry(names.head, Keyword.ANY, op, if (last) e.next else fn)
         }
-        if (e1.symbol == ANY) {symbols.toList.map(s => Entry(e1.name, s, e1.operation, e1.next))}
+        if (e1.symbol == Keyword.ANY) {symbols.toList.map(s => Entry(e1.name, s, e1.operation, e1.next))}
         else List(e1)
       }
       ops match {

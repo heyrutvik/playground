@@ -1,13 +1,13 @@
 package machine
 
 import eu.timepit.refined.auto._
-import machine.compile.{Compiler, ConfigContext, Symbol, SymbolContext}
+import machine.compile.{Compiler, ConfigContext, Keyword, Symbol, SymbolContext}
 import machine.encode.{DescriptionNumber, StandardDescription, StandardForm}
 import machine.interpret.Interpreter
 import machine.interpret.Interpreter.CompleteConfig
 import machine.regular.Table.Entry
 import machine.regular.{Table => RTable}
-import machine.standard.AST.{Final, Table => ASTTable}
+import machine.standard.AST.{FC, Table => ASTTable}
 import machine.standard.{AST, S, Table => STable}
 
 package object implicits {
@@ -15,25 +15,27 @@ package object implicits {
   implicit val cc: ConfigContext = Map()
   // TODO drop drop :p
   implicit val sc: SymbolContext =
-    Map(Symbol.BLANK -> S(0), "0" -> S(1), "1" -> S(2), Symbol.ANY -> S(3), Symbol.DYNAMIC.drop(1) -> S(4))
+    Map(Keyword.BLANK -> S(0), "0" -> S(1), "1" -> S(2), Keyword.ANY -> S(3), Symbol.DYNAMIC.drop(1) -> S(4))
   implicit val print: CompleteConfig => Unit = _ => ()
 
   implicit class StandardFormOps(ast: AST) {
     def toStandardTable: STable = ast match {
-      case f: Final => STable(f.toEntry)
+      case f: FC => STable(f.toEntry)
       case t: ASTTable => STable(t.toEntry)
     }
   }
 
   implicit class RTableOps(rt: RTable) {
-    def print(step: Int): String = {
+    def print(step: Int): Unit = {
       val (_, sc, ast) = Compiler(rt.mkDSL)
       implicit val ct = ast.toStandardTable
       val cs: Map[S, String] = sc.map(_.swap)
-      Interpreter.run(step).map(c => cs(c)).map {
-        case Symbol.BLANK => "_"
-        case s => s
-      }.toList.mkString("|", "|", "|")
+      Console.print {
+        Interpreter.run(step).map(c => cs(c)).map {
+          case Keyword.BLANK => "_"
+          case s => s
+        }.toList.mkString("|", "|", "|")
+      }
     }
 
     def simulate(step: Int): Unit = {
@@ -42,13 +44,12 @@ package object implicits {
       val cs = sc.map(_.swap)
       val cc1 = cc.map(_.swap)
       val rewriteSymbol: String => String = {
-        case Symbol.BLANK => "_"
+        case Keyword.BLANK => "_"
         case s => s
       }
-      def removePrimes(name: String): String = name.takeWhile(_.isLetter)
       implicit val print: CompleteConfig => Unit = { complete =>
         Console.print {
-          fansi.Bold.On(fansi.Color.Green(removePrimes(cc1(complete.state)))) + ": " +
+          fansi.Bold.On(fansi.Color.Green(machine.elaborate.removePrimes(cc1(complete.state)))) + ": " +
             complete.tape.zipWithIndex.map{
               case (c, i) => (cs(c), i)
             }.map {
@@ -59,7 +60,7 @@ package object implicits {
         }
         Thread.sleep(500)
       }
-      println(rt.prettyPrint)
+      println(rt.pretty)
       Interpreter.run(step)
       println
     }

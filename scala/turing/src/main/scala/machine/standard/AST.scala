@@ -6,19 +6,19 @@ import machine.standard.Table.Entry
 trait AST
 
 object AST {
-  case class MConfig(i: Q) extends AST
-  case class Scan(mc: AST, i: S) extends AST // mc: MConfig
-  case class Op(c: AST, op: Operation) extends AST // c: Scan
-  case class Final(op: AST, fc: Q) extends AST { // op: Op
+  case class MC(mc: C) extends AST
+  case class Sy(mc: AST, s: S) extends AST // mc: MC
+  case class Op(c: AST, o: O) extends AST // c: Sym
+  case class FC(op: AST, fc: C) extends AST { // op: Op
     def toEntry: List[Entry] = this match {
-      case Final(Op(Scan(MConfig(q), s), op), f) => List(Entry(q, s, op, f))
+      case FC(Op(Sy(MC(q), s), op), f) => List(Entry(q, s, op, f))
     }
   }
-  case class Table(first: AST, second: AST) extends AST { // first: Final
+  case class Table(first: AST, second: AST) extends AST { // first: FC
     def toEntry: List[Entry] = first match {
-      case Final(Op(Scan(MConfig(q), s), op), f) => Entry(q, s, op, f) :: {
+      case FC(Op(Sy(MC(q), s), op), f) => Entry(q, s, op, f) :: {
         second match {
-          case f: Final => f.toEntry
+          case f: FC => f.toEntry
           case t: Table => t.toEntry
         }
       }

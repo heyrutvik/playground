@@ -1,6 +1,7 @@
 package machine.interpret
 
 import eu.timepit.refined.auto._
+import machine.standard.O._
 import machine.standard.Table.Entry
 import machine.standard.{Table => STable, _}
 
@@ -8,9 +9,9 @@ import scala.collection.mutable.ArrayBuffer
 
 object Interpreter {
 
-  case class Config(mc: Q, s: S)
-  case class Behaviour(o: Operation, fc: Q)
-  case class CompleteConfig(state: Q, head: Int, tape: ArrayBuffer[S])
+  case class Config(mc: C, s: S)
+  case class Behaviour(o: O, fc: C)
+  case class CompleteConfig(state: C, head: Int, tape: ArrayBuffer[S])
 
   def update(cc: CompleteConfig)(implicit context: Map[Config, Behaviour]): CompleteConfig = {
     import cc._
@@ -35,7 +36,7 @@ object Interpreter {
         context.mkString("\n"),
         "---------------").foreach(println)
     }
-    var cc = CompleteConfig(ct.es.head.name, 0, ArrayBuffer(S(0)))
+    var cc = CompleteConfig(ct.es.head.mc, 0, ArrayBuffer(S(0)))
     (1 until step).foreach { _ => print(cc); cc = update(cc)}
     cc.tape
   }

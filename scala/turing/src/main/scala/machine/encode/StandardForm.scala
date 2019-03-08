@@ -1,6 +1,7 @@
 package machine.encode
 
 import machine.compile.Move._
+import machine.standard.O._
 import machine.standard.Table.Entry
 import machine.standard._
 
@@ -10,8 +11,8 @@ trait StandardForm[T] {
 
 object StandardFormInstance {
 
-  implicit val m_configStandardForm: StandardForm[Q] = {
-    (q: Q) => "q" + q.n.toString
+  implicit val m_configStandardForm: StandardForm[C] = {
+    (q: C) => "q" + q.n.toString
   }
 
   implicit val symbolStandardForm: StandardForm[S] = {
@@ -31,14 +32,10 @@ object StandardFormInstance {
   }
 
   implicit def entryStandardForm(
-                                  implicit q: StandardForm[Q],
+                                  implicit q: StandardForm[C],
                                   s: StandardForm[S],
-                                  r: StandardForm[R],
-                                  l: StandardForm[L],
-                                  n: StandardForm[N]): StandardForm[Entry] = {
-      case op @ Entry(_, _, _: R, _) => q.encode(op.name) + s.encode(op.symbol) + r.encode(op.operation.asInstanceOf[R]) + q.encode(op.next) + ";"
-      case op @ Entry(_, _, _: L, _) => q.encode(op.name) + s.encode(op.symbol) + l.encode(op.operation.asInstanceOf[L]) + q.encode(op.next) + ";"
-      case op @ Entry(_, _, _: N, _) => q.encode(op.name) + s.encode(op.symbol) + n.encode(op.operation.asInstanceOf[N]) + q.encode(op.next) + ";"
+                                  op: StandardForm[O]): StandardForm[Entry] = {
+    (e: Entry) => q.encode(e.mc) + s.encode(e.sym) + op.encode(e.op) + q.encode(e.fc) + ";"
   }
 
   implicit def tableStandardForm(implicit e: StandardForm[Entry]): StandardForm[Table] = {

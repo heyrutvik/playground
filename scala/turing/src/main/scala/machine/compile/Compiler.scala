@@ -6,30 +6,30 @@ import machine.implicits._
 import machine.regular.DSL
 import machine.regular.DSL.{Table => DTable, _}
 import machine.standard.AST.{Table => STable, _}
+import machine.standard.O._
 import machine.standard.{AST, _}
-
 object Compiler {
 
-  private def _standardForm(t: DSL)(implicit freshmc: () => Q, freshsym: () => S, cc: ConfigContext, sc: SymbolContext): (ConfigContext, SymbolContext, AST) = {
+  private def _standardForm(t: DSL)(implicit freshmc: () => C, freshsym: () => S, cc: ConfigContext, sc: SymbolContext): (ConfigContext, SymbolContext, AST) = {
     t match {
       case Define(s) => {
-        lookup(cc, s).map(c => (cc, sc, MConfig(c))).getOrElse {
+        lookup(cc, s).map(c => (cc, sc, MC(c))).getOrElse {
           val ecc = extend(cc, s, freshmc())
-          (ecc, sc, MConfig(lookup(ecc, s).get))
+          (ecc, sc, MC(lookup(ecc, s).get))
         }
       }
       case Read(mc, s) => {
         val (ecc, esc, ast) = _standardForm(mc)
-        lookup(esc, s).map(sym => (ecc, esc, Scan(ast, sym))).getOrElse {
+        lookup(esc, s).map(sym => (ecc, esc, Sy(ast, sym))).getOrElse {
           val eesc = extend(esc, s, freshsym())
-          (ecc, eesc, Scan(ast, lookup(eesc, s).get))
+          (ecc, eesc, Sy(ast, lookup(eesc, s).get))
         }
       }
       case Perform(c, op) => {
         val (ecc, esc, ast) = _standardForm(c)
         Elaborator.operation(c.sym, op).split(",").toList match {
           case "E" :: (m @ (RIGHT | LEFT | NONE)) :: Nil =>
-            (ecc, esc, Op(ast, R(lookup(esc, Symbol.BLANK).get)))
+            (ecc, esc, Op(ast, R(lookup(esc, Keyword.BLANK).get)))
           case p :: RIGHT :: Nil => lookup(esc, p.drop(1)).map(sym => (ecc, esc, Op(ast, R(sym)))).getOrElse {
             val eesc = extend(esc, p.drop(1), freshsym())
             (ecc, eesc, Op(ast, R(lookup(eesc, p.drop(1)).get)))
@@ -46,9 +46,9 @@ object Compiler {
       }
       case Goto(p, fc) => {
         val (ecc, esc, ast) = _standardForm(p)
-        lookup(ecc, fc).map(c => (ecc, esc, Final(ast, c))).getOrElse {
+        lookup(ecc, fc).map(c => (ecc, esc, FC(ast, c))).getOrElse {
           val eecc = extend(ecc, fc, freshmc())
-          (eecc, esc, Final(ast, lookup(eecc, fc).get))
+          (eecc, esc, FC(ast, lookup(eecc, fc).get))
         }
       }
       case DTable(goto, dsl) => {

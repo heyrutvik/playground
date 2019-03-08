@@ -1,6 +1,6 @@
 package machine.regular
 
-import machine.compile.Symbol._
+import machine.compile.Keyword
 import machine.regular.DSL.{Define, Goto, Perform, Read}
 import machine.regular.Table.Entry
 
@@ -10,8 +10,8 @@ import machine.regular.Table.Entry
 trait DSL
 
 object DSL extends DSL0 {
-  val blank = BLANK
-  val any = ANY
+  val blank = Keyword.BLANK
+  val any = Keyword.ANY
   case class Define(s: String) extends DSL
   case class Read(mc: Define, sym: String) extends DSL
   case class Perform(c: Read, op: String) extends DSL

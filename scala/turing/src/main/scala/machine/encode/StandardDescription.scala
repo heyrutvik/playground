@@ -1,6 +1,7 @@
 package machine.encode
 
 import machine.compile.Move._
+import machine.standard.O._
 import machine.standard.Table.Entry
 import machine.standard._
 
@@ -10,8 +11,8 @@ trait StandardDescription[T] {
 
 object StandardDescriptionInstance {
 
-  implicit val mconfigStandardDescription: StandardDescription[Q] = {
-    (mc: Q) => "D" + (1 to mc.n.value).map(_ => "A").mkString
+  implicit val mconfigStandardDescription: StandardDescription[C] = {
+    (mc: C) => "D" + (1 to mc.n.value).map(_ => "A").mkString
   }
 
   implicit val symbolStandardDescription: StandardDescription[S] = {
@@ -31,14 +32,10 @@ object StandardDescriptionInstance {
   }
 
   implicit def entryStandardDescription(
-                                         implicit q: StandardDescription[Q],
+                                         implicit q: StandardDescription[C],
                                          s: StandardDescription[S],
-                                         r: StandardDescription[R],
-                                         l: StandardDescription[L],
-                                         n: StandardDescription[N]): StandardDescription[Entry] = {
-      case op @ Entry(_, _, _: R, _) => q.encode(op.name) + s.encode(op.symbol) + r.encode(op.operation.asInstanceOf[R]) + q.encode(op.next) + ";"
-      case op @ Entry(_, _, _: L, _) => q.encode(op.name) + s.encode(op.symbol) + l.encode(op.operation.asInstanceOf[L]) + q.encode(op.next) + ";"
-      case op @ Entry(_, _, _: N, _) => q.encode(op.name) + s.encode(op.symbol) + n.encode(op.operation.asInstanceOf[N]) + q.encode(op.next) + ";"
+                                         op: StandardDescription[O]): StandardDescription[Entry] = {
+    (e: Entry) => q.encode(e.mc) + s.encode(e.sym) + op.encode(e.op) + q.encode(e.fc) + ";"
   }
 
   implicit def tableStandardDescription(implicit e: StandardDescription[Entry]): StandardDescription[Table] = {

@@ -24,5 +24,5 @@ object Demo extends App {
     {"p" read blank perform "L, L"                             goto "p"} |:
     {"f" read any   perform "R, R"                             goto "f"} |:
     {"f" read blank perform "P0, L, L"                         goto "o"}
-  } simulate 500
+  } simulate 100
 }
