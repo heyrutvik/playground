@@ -1,6 +1,8 @@
 package machine
 
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.NonNegative
 import machine.compile.{Compiler, ConfigContext, Keyword, Symbol, SymbolContext}
 import machine.encode.{DescriptionNumber, StandardDescription, StandardForm}
 import machine.interpret.Interpreter
@@ -26,7 +28,7 @@ package object implicits {
   }
 
   implicit class RTableOps(rt: RTable) {
-    def print(step: Int): Unit = {
+    def print(step: Int Refined NonNegative): Unit = {
       val (_, sc, ast) = Compiler(rt.mkDSL)
       implicit val ct = ast.toStandardTable
       val cs: Map[S, String] = sc.map(_.swap)
@@ -38,7 +40,7 @@ package object implicits {
       }
     }
 
-    def simulate(step: Int): Unit = {
+    def simulate(step: Int Refined NonNegative): Unit = {
       val (cc, sc, ast) = Compiler(rt.mkDSL)
       implicit val ct = ast.toStandardTable
       val cs = sc.map(_.swap)

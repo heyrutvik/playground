@@ -1,6 +1,8 @@
 package machine.interpret
 
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.NonNegative
 import machine.standard.O._
 import machine.standard.Table.Entry
 import machine.standard.{Table => STable, _}
@@ -24,7 +26,7 @@ object Interpreter {
     CompleteConfig(fc, h, t)
   }
 
-  def run(step: Int, debug: Boolean = false)(implicit ct: STable, print: CompleteConfig => Unit = _ => ()): ArrayBuffer[S] = {
+  def run(step: Int Refined NonNegative, debug: Boolean = false)(implicit ct: STable, print: CompleteConfig => Unit = _ => ()): ArrayBuffer[S] = {
     implicit val context: Map[Config, Behaviour] = ct.es.map {
       case Entry(name, symbol, operation, next) => Config(name, symbol) -> Behaviour(operation, next)
     }.toMap
@@ -37,7 +39,11 @@ object Interpreter {
         "---------------").foreach(println)
     }
     var cc = CompleteConfig(ct.es.head.mc, 0, ArrayBuffer(S(0)))
-    (1 until step).foreach { _ => print(cc); cc = update(cc)}
+    (if (step > 0) {
+      1 until step
+    } else {
+      Stream.from(1)
+    }).foreach { _ => print(cc); cc = update(cc)}
     cc.tape
   }
 }

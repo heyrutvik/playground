@@ -1,5 +1,6 @@
 package machine
 
+import eu.timepit.refined.auto._
 import machine.implicits._
 import machine.regular.DSL._
 
@@ -24,5 +25,5 @@ object Demo extends App {
     {"p" read blank perform "L, L"                             goto "p"} |:
     {"f" read any   perform "R, R"                             goto "f"} |:
     {"f" read blank perform "P0, L, L"                         goto "o"}
-  } simulate 100
+  } simulate infinite
 }

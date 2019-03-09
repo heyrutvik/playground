@@ -1,5 +1,8 @@
 package machine.regular
 
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.NonNegative
 import machine.compile.Keyword
 import machine.regular.DSL.{Define, Goto, Perform, Read}
 import machine.regular.Table.Entry
@@ -12,6 +15,7 @@ trait DSL
 object DSL extends DSL0 {
   val blank = Keyword.BLANK
   val any = Keyword.ANY
+  val infinite: Int Refined NonNegative = 0
   case class Define(s: String) extends DSL
   case class Read(mc: Define, sym: String) extends DSL
   case class Perform(c: Read, op: String) extends DSL
